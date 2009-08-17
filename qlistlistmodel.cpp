@@ -76,7 +76,10 @@ int QListListModel::rowCount(const QModelIndex &index) const
     Q_UNUSED(index);
     //printf("This: %p\n", this);
     //printf("List: %p\n", this->list);
-    int count = sp_playlistcontainer_num_playlists(this->playLists);;
+    int count = 0;
+    //TODO: add searchLists and playLists
+    if(this->playLists)
+	count += sp_playlistcontainer_num_playlists(this->playLists);;
     //printf("Count: %d\n", count);
     return count;
 }
@@ -89,6 +92,8 @@ int QListListModel::columnCount(const QModelIndex &index) const
 
 sp_playlist *QListListModel::getPlayList(const QModelIndex &index)
 {
+    // TODO: DANGER! playList may be NULL, though this function
+    // should in THEORY never be called if it is...
     int row = index.row();
     selectedIndex = this->searchLists->size() + row;
     return sp_playlistcontainer_playlist(this->playLists, row);
@@ -126,7 +131,10 @@ sp_track *QListListModel::getTrack(const QModelIndex &index)
 
 int QListListModel::playListCount(void)
 {
-    return sp_playlistcontainer_num_playlists(this->playLists);
+    if(playLists)
+	return sp_playlistcontainer_num_playlists(this->playLists);
+    else
+	return 0;
 }
 
 QVariant QListListModel::data(const QModelIndex &index, int role) const

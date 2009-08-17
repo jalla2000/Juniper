@@ -332,11 +332,17 @@ void MainWindow::searchComplete(sp_search *search)
 	//playList->setItem(rowIndex, 2, albumCell);
     }
 
+    printf("mainwindow.cpp: Adding search to listlistmodel\n");
+    if(!listListModel) //this is kinda dirty. need cleanup
+	listListModel = new QListListModel(NULL);
     listListModel->addSearch(search);
     //TODO: free the previous model before allocating a new
+    printf("mainwindow.cpp: Creating searchlistmodel\n");
     searchListModel = new QSearchListModel(search, listView);
+    printf("mainwindow.cpp: Setting searchlistmodel\n");
     listView->setModel(searchListModel);
 
+    printf("mainwindow.cpp: Executing messy code\n");
     QHeaderView *header = listView->horizontalHeader();
     header->setStretchLastSection(true);
     listView->setHorizontalHeader(header);
@@ -417,7 +423,8 @@ void MainWindow::updatePlayListList(sp_playlistcontainer *plc)
       const char *listName = sp_playlist_name(pl);
     }
     */
-    listListModel = new QListListModel(plc);
+    if(!listListModel)
+	listListModel = new QListListModel(plc);
     listListView->setModel(listListModel);
 }
 
