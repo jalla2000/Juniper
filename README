@@ -1,0 +1,27 @@
+
+How to compile
+==============================================================
+
+To compile, you need to have several libraies installed.
+You'll need qt4-dev, libspotify, libsndfile and more.
+Libspotify can be downloaded from http://developer.spotify.com
+To compile an application using libspotify, you also need an 
+application key defined in a file called appkey.c
+
+TODO: more about obtaining application keys
+TODO: elaborate. find out what libs are needed.
+
+When the libraries and the application key are in place,
+simply run:
+
+./configure.sh
+make
+
+How to run
+==============================================================
+
+Create a file with your username and password on two separate
+lines. Username first, then password. Save file as user.cfg
+
+Then simply run:
+./juniper
