@@ -5,7 +5,7 @@ rm *.pro 2>/dev/null
 rm Makefile 2>/dev/null
 echo "Generating makefile..."
 qmake -project
-echo "QT += network" >> juniper.pro
+echo "QT += network" >> Juniper.pro
 echo "Generating meta objects..."
 qmake
 echo "Adding libspotify compile flags..."
