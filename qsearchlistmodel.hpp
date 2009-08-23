@@ -31,7 +31,7 @@
 class QSearchListModel : public QAbstractTableModel
 {
     Q_OBJECT
-	
+
  public:
     QSearchListModel(sp_search *pl, QObject *parent = 0);
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;

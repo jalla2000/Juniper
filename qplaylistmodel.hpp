@@ -31,17 +31,18 @@
 class QPlayListModel : public QAbstractTableModel
 {
     Q_OBJECT
-	
+
  public:
     QPlayListModel(sp_playlist *pl, QObject *parent = 0);
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     int rowCount(const QModelIndex &index) const;
+    int getTrackCount();
     int columnCount(const QModelIndex &index) const;
     QVariant data(const QModelIndex &index, int role) const;
     bool insertRows(int row, sp_track *track);
     sp_track *getTrack(const QModelIndex &index);
-    QVariant headerData(int section, Qt::Orientation orient, int role) const;    
-    
+    QVariant headerData(int section, Qt::Orientation orient, int role) const;
+
  private:
     sp_playlist *playList;
     int columns;

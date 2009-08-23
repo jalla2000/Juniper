@@ -114,7 +114,7 @@ sp_search *QListListModel::getSearchList(const QModelIndex &index)
 sp_track *QListListModel::getTrack(const QModelIndex &index)
 {
     //TODO: add extra bounds checking on index.row()
-    
+    printf("QListListModel: getTrack()\n");
     if(selectedIndex < searchLists->size()){
 	return sp_search_track(searchLists->at(selectedIndex), index.row());
     }

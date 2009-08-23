@@ -84,6 +84,12 @@ int QPlayListModel::columnCount(const QModelIndex &index) const
     return this->columns;
 }
 
+int QPlayListModel::getTrackCount()
+{
+    int count = sp_playlist_num_tracks(this->playList);
+    return count;
+}
+
 sp_track *QPlayListModel::getTrack(const QModelIndex &index)
 {
     printf("getTrack called\n");
@@ -93,11 +99,11 @@ sp_track *QPlayListModel::getTrack(const QModelIndex &index)
 
 QVariant QPlayListModel::data(const QModelIndex &index, int role) const
 {
-    
+
     //printf("Role: %d\n", role);
 
     if(role==Qt::DisplayRole){
-	
+
 	int row = index.row();
 	int column = index.column();
 	//printf("Requesting DisplayRole data for row %d, col %d\n", row, column);

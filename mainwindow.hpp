@@ -46,9 +46,9 @@
 #include "qsearchlistmodel.hpp"
 
 class MainWindow : public QMainWindow {
-    
+
     Q_OBJECT
-	
+
  public:
     MainWindow(QWidget *parent = 0);
     SpotWorker *spotWorker; //TODO: make private!
@@ -56,7 +56,7 @@ class MainWindow : public QMainWindow {
     static QString getPassword(void);
 
  private:
-    
+
     //GUI stuff
     QLineEdit *searchBox;
     QPushButton *searchButton;
@@ -65,7 +65,7 @@ class MainWindow : public QMainWindow {
     QPushButton *nextButton;
     QPushButton *prevButton;
     QPushButton *netButton;
-    QPushButton *quitButton; 
+    QPushButton *quitButton;
     QSplitter *listSplitter;
     QMenu *formatMenu;
     QMenu *styleMenu;
@@ -81,10 +81,13 @@ class MainWindow : public QMainWindow {
     QListListView *listListView;
     QListListModel *listListModel;
     QPlayListView *listView;
-    
+
+    QPlayListModel *nowPlayingPlaylist;
+    QSearchListModel *nowPlayingSearch;
+
     QPlayListModel *playListModel;
     QSearchListModel *searchListModel;
-    
+
     QAction *aboutAction;
     QAction *exitAction;
     bool autoRip;
@@ -105,7 +108,7 @@ class MainWindow : public QMainWindow {
 
  signals:
     void someSignal();
-    
+
  public slots:
     void executeSearch();
     void searchComplete(sp_search *search);
