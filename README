@@ -9,13 +9,18 @@ also need an application key defined in a file called appkey.c
 TODO: info about obtaining application keys
 
 After a fresh install of Ubuntu 9.04, you'll need to install 
-the following packages:
+the following packages to compile Juniper:
 
 libqt4-dev
 build-essential
 libasound-dev
 libsndfile-dev (the version in the repo is too old)
 libspotify (download from http://developer.spotify.com)
+TODO: libogg is also probably needed
+lame
+
+Juniper will compile without lame, but will carefully fail to
+create mp3-files at runtime.
 
 When the libraries and the application key are in place,
 simply run:
