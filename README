@@ -2,14 +2,20 @@
 How to compile
 ==============================================================
 
-To compile, you need to have several libraies installed.
-You'll need qt4-dev, libspotify, libsndfile and more.
-Libspotify can be downloaded from http://developer.spotify.com
-To compile an application using libspotify, you also need an 
-application key defined in a file called appkey.c
+To compile, you need to have several libraies installed (See
+further down). To compile an application using libspotify, you
+also need an application key defined in a file called appkey.c
 
-TODO: more about obtaining application keys
-TODO: elaborate. find out what libs are needed.
+TODO: info about obtaining application keys
+
+After a fresh install of Ubuntu 9.04, you'll need to install 
+the following packages:
+
+libqt4-dev
+build-essential
+libasound-dev
+libsndfile-dev (the version in the repo is too old)
+libspotify (download from http://developer.spotify.com)
 
 When the libraries and the application key are in place,
 simply run:
