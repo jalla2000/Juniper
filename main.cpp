@@ -45,7 +45,6 @@ int main(int argc, char *argv[])
     //    printf("Username found: %s\n", MainWindow::getUsername().toAscii().constData());
     MainWindow mainframe;
 
-    mainframe.show();
     return app.exec();
 
 }

@@ -113,6 +113,8 @@ MainWindow::MainWindow(QWidget *parent)
     printf("Signals connected\n");
     guiUpdater->start(200);
 
+    this->show();
+
 }
 
 void MainWindow::setupGUI()
