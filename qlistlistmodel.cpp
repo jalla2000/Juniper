@@ -32,6 +32,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define DEBUGLEVEL 0
+#define DEBUG if(DEBUGLEVEL)
+
 QListListModel::QListListModel(sp_playlistcontainer *plc, QObject *parent)
   : QAbstractItemModel(parent)
 {
@@ -104,7 +107,7 @@ sp_search *QListListModel::getSearchList(const QModelIndex &index)
 {
     int row = index.row();
     if(row>(searchLists->size()-1)){
-	printf("Serirorus error occured. Bounds check failed in listlistmodel.\n");
+	DEBUG printf("Serirorus error occured. Bounds check failed in listlistmodel.\n");
 	return this->searchLists->at(0);
     }
     else{
@@ -115,7 +118,7 @@ sp_search *QListListModel::getSearchList(const QModelIndex &index)
 sp_track *QListListModel::getTrack(const QModelIndex &index)
 {
     //TODO: add extra bounds checking on index.row()
-    printf("QListListModel: getTrack()\n");
+    DEBUG printf("QListListModel: getTrack()\n");
     if(selectedIndex < searchLists->size()){
 	return sp_search_track(searchLists->at(selectedIndex), index.row());
     }
@@ -124,8 +127,8 @@ sp_track *QListListModel::getTrack(const QModelIndex &index)
 	return sp_playlist_track(pl, index.row());
     }
     else{
-	printf("FATAL ERROR: bounds check failed in QListListModel::getTrack\n");
-	printf("index: %d, searchLists->size = %d, playListCount() = %d\n", selectedIndex, searchLists->size(), playListCount());
+	DEBUG printf("FATAL ERROR: bounds check failed in QListListModel::getTrack\n");
+	DEBUG printf("index: %d, searchLists->size = %d, playListCount() = %d\n", selectedIndex, searchLists->size(), playListCount());
     }
     return NULL;
 }
@@ -175,9 +178,9 @@ bool QListListModel::insertRows(int row, sp_track *track)
 
 void QListListModel::addSearch(sp_search *search)
 {
-    printf("QListListModel::addSearch: appending searchlist\n");
+    DEBUG printf("QListListModel::addSearch: appending searchlist\n");
     this->searchLists->append(search);
-    printf("QListListModel::addSearch: setting selectedIndex\n");
+    DEBUG printf("QListListModel::addSearch: setting selectedIndex\n");
     this->selectedIndex = searchLists->size()-1;
 }
 
