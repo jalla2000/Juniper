@@ -57,11 +57,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     printf("MainWindow is being instantiated!\n");
 
-    listListModel = new QListListModel(NULL);    this->setWindowTitle("Juniper");
-    autoRip = false;
-    ripFormat = SoundSaver::MP3;
+    listListModel_ = new QListListModel(NULL);    this->setWindowTitle("Juniper");
+    autoRip_ = false;
+    ripFormat_ = SoundSaver::MP3;
 
-    guiUpdater = new QTimer;
+    guiUpdater_ = new QTimer;
     spotWorker = SpotWorker::getInstance();
     spotWorker->start(getUsername(), getPassword());
     printf("SpotWorker started\n");
@@ -72,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent)
     connectSignals();
     printf("Signals connected\n");
 
-    guiUpdater->start(200);
+    guiUpdater_->start(200);
 
     this->show();
 
@@ -87,165 +87,162 @@ void MainWindow::setupGUI()
     //mainWidget->setStyleSheet("QWidget#mainWidget { background-image: url(gfx/background4.gif)}");
     setCentralWidget(mainWidget);
 
-    exitAction = new QAction(tr("E&xit"), this);
-    exitAction->setShortcut(tr("Ctrl+Q"));
-    exitAction->setStatusTip(tr("Exit the application"));
+    exitAction_ = new QAction(tr("E&xit"), this);
+    exitAction_->setShortcut(tr("Ctrl+Q"));
+    exitAction_->setStatusTip(tr("Exit the application"));
 
-    aboutAction = new QAction(tr("&About"), this);
-    aboutAction->setStatusTip(tr("About Juniper"));
+    aboutAction_ = new QAction(tr("&About"), this);
+    aboutAction_->setStatusTip(tr("About Juniper"));
 
-    fileMenu = menuBar()->addMenu(tr("&File"));
-    fileMenu->addAction(exitAction);
+    fileMenu_ = menuBar()->addMenu(tr("&File"));
+    fileMenu_->addAction(exitAction_);
     //These two don't look too good
     //menuBar()->setStyleSheet("QMenuBar { background-image: url(background1.gif)}");
     //fileMenu->setStyleSheet("QMenu { background-image: url(background1.gif)}");
 
-    settingsMenu = menuBar()->addMenu(tr("&Settings"));
-    formatMenu = settingsMenu->addMenu(tr("Rip format"));
-    styleMenu = settingsMenu->addMenu(tr("Window style"));
+    settingsMenu_ = menuBar()->addMenu(tr("&Settings"));
+    formatMenu_ = settingsMenu_->addMenu(tr("Rip format"));
+    styleMenu_ = settingsMenu_->addMenu(tr("Window style"));
 
-    formatGroup = new QActionGroup(this);
+    formatGroup_ = new QActionGroup(this);
 
-    selectWavAction = new QAction(tr("&WAV"), formatGroup);
-    selectFlacAction = new QAction(tr("&FLAC"), formatGroup);
-    selectOggAction = new QAction(tr("&OGG"), formatGroup);
-    selectMp3Action = new QAction(tr("&MP3"), formatGroup);
-    selectWavAction->setCheckable(true);
-    selectFlacAction->setCheckable(true);
-    selectOggAction->setCheckable(true);
-    selectMp3Action->setCheckable(true);
+    selectWavAction_ = new QAction(tr("&WAV"), formatGroup_);
+    selectFlacAction_ = new QAction(tr("&FLAC"), formatGroup_);
+    selectOggAction_ = new QAction(tr("&OGG"), formatGroup_);
+    selectMp3Action_ = new QAction(tr("&MP3"), formatGroup_);
+    selectWavAction_->setCheckable(true);
+    selectFlacAction_->setCheckable(true);
+    selectOggAction_->setCheckable(true);
+    selectMp3Action_->setCheckable(true);
 
-    selectMp3Action->setChecked(true);
-    formatMenu->addAction(selectWavAction);
-    formatMenu->addAction(selectFlacAction);
-    formatMenu->addAction(selectOggAction);
-    formatMenu->addAction(selectMp3Action);
+    selectMp3Action_->setChecked(true);
+    formatMenu_->addAction(selectWavAction_);
+    formatMenu_->addAction(selectFlacAction_);
+    formatMenu_->addAction(selectOggAction_);
+    formatMenu_->addAction(selectMp3Action_);
 
-    toggleAutoRipAction = new QAction(tr("&AutoRip"), this);
-    toggleAutoRipAction->setCheckable(true);
-    toggleAutoRipAction->setChecked(this->autoRip);
+    toggleAutoRipAction_ = new QAction(tr("&AutoRip"), this);
+    toggleAutoRipAction_->setCheckable(true);
+    toggleAutoRipAction_->setChecked(autoRip_);
 
-    settingsMenu->addAction(toggleAutoRipAction);
-    settingsMenu->addMenu(formatMenu);
-    settingsMenu->addMenu(styleMenu);
+    settingsMenu_->addAction(toggleAutoRipAction_);
+    settingsMenu_->addMenu(formatMenu_);
+    settingsMenu_->addMenu(styleMenu_);
 
-    styleActionGroup = new QActionGroup(this);
+    styleActionGroup_ = new QActionGroup(this);
     foreach(QString styleName, QStyleFactory::keys()){
-	QAction *action = new QAction(styleActionGroup);
+	QAction *action = new QAction(styleActionGroup_);
 	action->setText(tr("%1 Style").arg(styleName));
 	action->setData(styleName);
 	action->setCheckable(true);
 	connect(action, SIGNAL(triggered(bool)), this, SLOT(changeStyle(bool)));
-	styleMenu->addAction(action);
+	styleMenu_->addAction(action);
     }
     //checkCurrentStyle();
 
-    aboutMenu = menuBar()->addMenu(tr("&Help"));
-    aboutMenu->addAction(aboutAction);
+    aboutMenu_ = menuBar()->addMenu(tr("&Help"));
+    aboutMenu_->addAction(aboutAction_);
 
-    searchBox = new QLineEdit;
-    searchButton = new QPushButton(tr("Search"));
+    searchBox_ = new QLineEdit;
+    searchButton_ = new QPushButton(tr("Search"));
 
-    listView = new QPlayListView(this);
+    listView_ = new QPlayListView(this);
 
-    QHeaderView *header = listView->horizontalHeader();
+    QHeaderView *header = listView_->horizontalHeader();
     header->setStretchLastSection(true);
-    listView->setHorizontalHeader(header);
-    listView->horizontalHeader()->resizeSection(0, listView->horizontalHeader()->frameSize().width()/3);
-    listView->horizontalHeader()->resizeSection(1, listView->horizontalHeader()->frameSize().width()/3);
-    listView->horizontalHeader()->resizeSection(2, listView->horizontalHeader()->frameSize().width()/3);
+    listView_->setHorizontalHeader(header);
+    listView_->horizontalHeader()->resizeSection(0, listView_->horizontalHeader()->frameSize().width()/3);
+    listView_->horizontalHeader()->resizeSection(1, listView_->horizontalHeader()->frameSize().width()/3);
+    listView_->horizontalHeader()->resizeSection(2, listView_->horizontalHeader()->frameSize().width()/3);
 
-    progressTimeLabel = new QLabel("00:00");    
-    totalTimeLabel = new QLabel("00:00");
+    progressTimeLabel_ = new QLabel("00:00");    
+    totalTimeLabel_ = new QLabel("00:00");
 
-    seekSlider = new QSlider(Qt::Horizontal);
-    seekSlider->setRange(0,1000);
-    seekSlider->setValue(0);
+    seekSlider_ = new QSlider(Qt::Horizontal);
+    seekSlider_->setRange(0,1000);
+    seekSlider_->setValue(0);
 
-    buttonPanel = new QWidget;
-    prevButton = new QPushButton(QPixmap("gfx/skip_backward.png"), "");
-    //playButton = new QPushButton(tr("Play"));
-    playButton = new QPushButton(QPixmap("gfx/play.png"), "");
-    nextButton = new QPushButton(QPixmap("gfx/skip_forward.png"), "");
-    netButton = new QPushButton(QPixmap("gfx/net.png"), "");
+    buttonPanel_ = new QWidget;
+    prevButton_ = new QPushButton(QPixmap("gfx/skip_backward.png"), "");
+    playButton_ = new QPushButton(QPixmap("gfx/play.png"), "");
+    nextButton_ = new QPushButton(QPixmap("gfx/skip_forward.png"), "");
+    netButton_ = new QPushButton(QPixmap("gfx/net.png"), "");
 
-    quitButton = new QPushButton(tr("Quit"));
-    quitButton->setFont(QFont("Times", 18, QFont::Bold));
+    quitButton_ = new QPushButton(tr("Quit"));
+    quitButton_->setFont(QFont("Times", 18, QFont::Bold));
 
-    listSplitter = new QSplitter(Qt::Horizontal, this);
-    listListView = new QListListView(this);
+    listSplitter_ = new QSplitter(Qt::Horizontal, this);
+    listListView_ = new QListListView(this);
 
-    listSplitter->addWidget(listListView);
-    listSplitter->addWidget(listView);
-    listSplitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    listSplitter_->addWidget(listListView_);
+    listSplitter_->addWidget(listView_);
+    listSplitter_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    QGridLayout *buttonsLayout = new QGridLayout;
-    buttonPanel->setLayout(buttonsLayout);
-    buttonsLayout->setContentsMargins(0, 0, 0, 0);
+    buttonsLayout_ = new QGridLayout;
+    buttonPanel_->setLayout(buttonsLayout_);
+    buttonsLayout_->setContentsMargins(0, 0, 0, 0);
     //buttonsLayout->setSpacing(0);
-    buttonsLayout->addWidget(prevButton, 0, 0);
-    buttonsLayout->addWidget(playButton, 0, 1);
-    buttonsLayout->addWidget(nextButton, 0, 2);
-    buttonsLayout->addWidget(progressTimeLabel, 0, 3);
-    buttonsLayout->addWidget(seekSlider, 0, 4);
-    buttonsLayout->addWidget(totalTimeLabel, 0, 5);
-    buttonsLayout->addWidget(netButton, 0, 6);
-    buttonPanel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    buttonsLayout_->addWidget(prevButton_, 0, 0);
+    buttonsLayout_->addWidget(playButton_, 0, 1);
+    buttonsLayout_->addWidget(nextButton_, 0, 2);
+    buttonsLayout_->addWidget(progressTimeLabel_, 0, 3);
+    buttonsLayout_->addWidget(seekSlider_, 0, 4);
+    buttonsLayout_->addWidget(totalTimeLabel_, 0, 5);
+    buttonsLayout_->addWidget(netButton_, 0, 6);
+    buttonPanel_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     QGridLayout *layout = new QGridLayout;
-    
-    layout->addWidget(searchBox, 0, 0, 1, 3);
-    layout->addWidget(searchButton, 0, 3, 1, 1);
-    layout->addWidget(listSplitter, 1, 0, 1, 4);
-    //layout->addWidget(filler, 2, 0, 1, 2);
-    layout->addWidget(buttonPanel, 2, 0, 1, 4);
 
-    listSplitter->setSizes(QList<int>() << 10 << 10000);
+    layout->addWidget(searchBox_, 0, 0, 1, 3);
+    layout->addWidget(searchButton_, 0, 3, 1, 1);
+    layout->addWidget(listSplitter_, 1, 0, 1, 4);
+    layout->addWidget(buttonPanel_, 2, 0, 1, 4);
+
+    listSplitter_->setSizes(QList<int>() << 10 << 10000);
 
     mainWidget->setLayout(layout);
     statusBar()->showMessage(QString("Juniper ready to rock"));
     setMinimumSize(300, 200);
     resize(800, 480);
-
 }
 
 void MainWindow::connectSignals()
 {
-    connect(guiUpdater, SIGNAL(timeout()),
+    connect(guiUpdater_, SIGNAL(timeout()),
 	    this, SLOT(updateGui()) );
 
     connect(spotWorker, SIGNAL(playListsDiscovered(sp_playlistcontainer*)),
 	    this, SLOT(updatePlayListList(sp_playlistcontainer*)) );
 
-    connect(netButton, SIGNAL(clicked()), spotWorker, SLOT(startServer()));
+    connect(netButton_, SIGNAL(clicked()), spotWorker, SLOT(startServer()));
 
-    connect(selectWavAction, SIGNAL(triggered()), this, SLOT(selectWav()) ); 
-    connect(selectFlacAction, SIGNAL(triggered()), this, SLOT(selectFlac()) ); 
-    connect(selectOggAction, SIGNAL(triggered()), this, SLOT(selectOgg()) ); 
-    connect(selectMp3Action, SIGNAL(triggered()), this, SLOT(selectMp3()) );     
+    connect(selectWavAction_, SIGNAL(triggered()), this, SLOT(selectWav()) );
+    connect(selectFlacAction_, SIGNAL(triggered()), this, SLOT(selectFlac()) );
+    connect(selectOggAction_, SIGNAL(triggered()), this, SLOT(selectOgg()) );
+    connect(selectMp3Action_, SIGNAL(triggered()), this, SLOT(selectMp3()) );
 
-    connect(toggleAutoRipAction, SIGNAL(toggled(bool)),
+    connect(toggleAutoRipAction_, SIGNAL(toggled(bool)),
 	    this, SLOT(toggleAutoRip(bool)) );
 
-    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
-    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
-    connect(playButton, SIGNAL(clicked()), this, SLOT(playStop()));
+    connect(exitAction_, SIGNAL(triggered()), this, SLOT(close()));
+    connect(aboutAction_, SIGNAL(triggered()), this, SLOT(about()));
+    connect(playButton_, SIGNAL(clicked()), this, SLOT(playStop()));
 
-    connect(listListView, SIGNAL(clicked(const QModelIndex)),
+    connect(listListView_, SIGNAL(clicked(const QModelIndex)),
 	    this, SLOT(listListClicked(const QModelIndex)) );
-    connect(listListView, SIGNAL(doubleClicked(const QModelIndex)),
+    connect(listListView_, SIGNAL(doubleClicked(const QModelIndex)),
 	    this, SLOT(listListDoubleClicked(const QModelIndex)) );
 
-    connect( searchBox, SIGNAL(returnPressed()), this, SLOT(executeSearch()) );
-    connect( searchButton, SIGNAL(clicked()), this, SLOT(executeSearch()) );
-    connect( quitButton, SIGNAL(clicked()), qApp, SLOT(quit()) );
+    connect( searchBox_, SIGNAL(returnPressed()), this, SLOT(executeSearch()) );
+    connect( searchButton_, SIGNAL(clicked()), this, SLOT(executeSearch()) );
+    connect( quitButton_, SIGNAL(clicked()), qApp, SLOT(quit()) );
 
     connect(spotWorker, SIGNAL(searchComplete(sp_search*)), 
 	    this, SLOT(searchComplete(sp_search*)) );
     connect(spotWorker, SIGNAL(loggedOut(sp_session*)),
 	    this, SLOT(loginFailed()) );
 
-    connect(listView, SIGNAL(doubleClicked(const QModelIndex)),
+    connect(listView_, SIGNAL(doubleClicked(const QModelIndex)),
 	    this, SLOT(songDoubleClicked(const QModelIndex)) );
 
 }
@@ -254,26 +251,26 @@ void MainWindow::executeSearch()
 {
   printf("MainWindow: slot executeSearch() was signaled!\n");
 
-  const QString sstr = searchBox->text();
+  const QString sstr = searchBox_->text();
   //int length = sstr.length();
   //const QByteArray qba = sstr.toUtf8();
   //int arrsz = qba.size();
   //const char *ss = qba.data();
   //printf("Length of string was %d\n", length);
   //printf("Contents of bytearray: %s\n", ss);
-  spotWorker->performSearch(searchBox->text());
+  spotWorker->performSearch(searchBox_->text());
 }
 
 void MainWindow::songDoubleClicked(const QModelIndex &index)
 {
     printf("Song doubleclicked... Trying to play it...\n");
 
-    sp_track* track = listListModel->getTrack(index);
+    sp_track* track = listListModel_->getTrack(index);
 
     printf("Loading player...\n");
-    spotWorker->loadPlayer(track, autoRip, ripFormat);
+    spotWorker->loadPlayer(track, autoRip_, ripFormat_);
     printf("Playing player...\n");
-    this->playButton->setText("Stop"); //TODO pål
+    playButton_->setText("Stop"); //TODO pål
     spotWorker->playPlayer(true);
 }
 
@@ -313,21 +310,21 @@ void MainWindow::searchComplete(sp_search *search)
     }
 
     printf("mainwindow.cpp: Adding search to listlistmodel\n");
-    listListModel->addSearch(search);
+    listListModel_->addSearch(search);
     //TODO: free the previous model before allocating a new
     printf("mainwindow.cpp: Creating searchlistmodel\n");
-    searchListModel = new QSearchListModel(search, listView);
+    searchListModel_ = new QSearchListModel(search, listView_);
     printf("mainwindow.cpp: Setting searchlistmodel\n");
-    listView->setModel(searchListModel);
+    listView_->setModel(searchListModel_);
 
     printf("mainwindow.cpp: Executing messy code\n");
-    QHeaderView *header = listView->horizontalHeader();
+    QHeaderView *header = listView_->horizontalHeader();
     header->setStretchLastSection(true);
-    listView->setHorizontalHeader(header);
-    listView->horizontalHeader()->resizeSection(0, listView->horizontalHeader()->frameSize().width()/3);
-    listView->horizontalHeader()->resizeSection(1, listView->horizontalHeader()->frameSize().width()/3);
-    listView->horizontalHeader()->resizeSection(2, listView->horizontalHeader()->frameSize().width()/3);
-    listView->resizeRowsToContents();
+    listView_->setHorizontalHeader(header);
+    listView_->horizontalHeader()->resizeSection(0, listView_->horizontalHeader()->frameSize().width()/3);
+    listView_->horizontalHeader()->resizeSection(1, listView_->horizontalHeader()->frameSize().width()/3);
+    listView_->horizontalHeader()->resizeSection(2, listView_->horizontalHeader()->frameSize().width()/3);
+    listView_->resizeRowsToContents();
     //TODO: we might have to free the search pointer or some shit
 }
 
@@ -368,19 +365,18 @@ void MainWindow::updateGui()
 	    totalText.prepend("0");
 	totalText.prepend(QString().setNum( (total/1000)/60 ) + ":");
 
-	this->progressTimeLabel->setText(progressText);
-	this->totalTimeLabel->setText(totalText);
-
-	this->seekSlider->setValue(sliderValue);
+	progressTimeLabel_->setText(progressText);
+	totalTimeLabel_->setText(totalText);
+	seekSlider_->setValue(sliderValue);
     }
     else {
-	this->seekSlider->setValue(0);
+	seekSlider_->setValue(0);
     }
 
     if(spotWorker->isPlaying())
-	this->playButton->setIcon(QPixmap("gfx/stop.png"));
+	playButton_->setIcon(QPixmap("gfx/stop.png"));
     else
-	this->playButton->setIcon(QPixmap("gfx/play.png"));
+	playButton_->setIcon(QPixmap("gfx/play.png"));
 }
 
 
@@ -401,9 +397,9 @@ void MainWindow::updatePlayListList(sp_playlistcontainer *plc)
       const char *listName = sp_playlist_name(pl);
     }
     */
-    if(!listListModel)
-	listListModel = new QListListModel(plc);
-    listListView->setModel(listListModel);
+    if(!listListModel_)
+	listListModel_ = new QListListModel(plc);
+    listListView_->setModel(listListModel_);
 }
 
 
@@ -430,31 +426,31 @@ void MainWindow::selectMp3()
 
 void MainWindow::toggleFormat(SoundSaver::FileType format)
 {
-    selectWavAction->setChecked(false);
-    selectFlacAction->setChecked(false);
-    selectOggAction->setChecked(false);
-    selectMp3Action->setChecked(false);
+    selectWavAction_->setChecked(false);
+    selectFlacAction_->setChecked(false);
+    selectOggAction_->setChecked(false);
+    selectMp3Action_->setChecked(false);
     switch(format){
     case SoundSaver::WAV:
-	selectWavAction->setChecked(true);
+	selectWavAction_->setChecked(true);
 	break;
     case SoundSaver::FLAC:
-	selectFlacAction->setChecked(true);
+	selectFlacAction_->setChecked(true);
 	break;
     case SoundSaver::OGG:
-	selectOggAction->setChecked(true);
+	selectOggAction_->setChecked(true);
 	break;
     case SoundSaver::MP3:
-	selectMp3Action->setChecked(true);
+	selectMp3Action_->setChecked(true);
 	break;
     }
-    this->ripFormat = format;
+    ripFormat_ = format;
 }
 
 void MainWindow::toggleAutoRip(bool rip)
 {
     printf("AutoRip toggled\n");
-    this->autoRip = rip;
+    autoRip_ = rip;
 }
 
 
@@ -473,7 +469,7 @@ void MainWindow::changeStyle(bool checked)
 
 void MainWindow::checkCurrentStyle()
 {
-    foreach (QAction *action, styleActionGroup->actions()) {
+    foreach (QAction *action, styleActionGroup_->actions()) {
 	QString styleName = action->data().toString();
 	QStyle *candidate = QStyleFactory::create(styleName);
 	Q_ASSERT(candidate);
@@ -490,18 +486,18 @@ void MainWindow::listListClicked(const QModelIndex &index)
 {
     //TODO: pål
     printf("List in playlistlist clicked, index: %d\n", index.row());
-    if(listListModel->isSearchList(index)){
+    if(listListModel_->isSearchList(index)){
 	printf("Searchlist clicked\n");
-	searchListModel = new QSearchListModel(listListModel->getSearchList(index), listView);
+	searchListModel_ = new QSearchListModel(listListModel_->getSearchList(index), listView_);
 	printf("Setting model\n");
-	this->listView->setModel(playListModel);
+	listView_->setModel(playListModel_);
 	printf("Model set\n");
     }
     else{
 	printf("Playlist clicked\n");
-	playListModel = new QPlayListModel(listListModel->getPlayList(index), listView);
+	playListModel_ = new QPlayListModel(listListModel_->getPlayList(index), listView_);
 	printf("Setting model\n");
-	this->listView->setModel(playListModel);
+	listView_->setModel(playListModel_);
 	printf("Model set\n");
     }
 

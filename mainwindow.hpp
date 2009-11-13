@@ -35,7 +35,7 @@
 #include <QLabel>
 #include <QListWidget>
 #include <QSplitter>
-//#include <QAbstractTableModel>
+#include <QGridLayout>
 
 #include <spotify/api.h>
 #include "spotworker.hpp"
@@ -58,48 +58,49 @@ class MainWindow : public QMainWindow {
  private:
 
     //GUI stuff
-    QLineEdit *searchBox;
-    QPushButton *searchButton;
-    QWidget *buttonPanel;
-    QPushButton *playButton;
-    QPushButton *nextButton;
-    QPushButton *prevButton;
-    QPushButton *netButton;
-    QPushButton *quitButton;
-    QSplitter *listSplitter;
-    QMenu *formatMenu;
-    QMenu *styleMenu;
-    QMenu *fileMenu;
-    QMenu *settingsMenu;
-    QMenu *helpMenu;
-    QMenu *aboutMenu;
-    QSlider *seekSlider;
-    QLabel *progressTimeLabel;
-    QLabel *totalTimeLabel;
-    QTimer *guiUpdater;
+    QLineEdit *searchBox_;
+    QPushButton *searchButton_;
+    QWidget *buttonPanel_;
+    QGridLayout *buttonsLayout_;
+    QPushButton *playButton_;
+    QPushButton *nextButton_;
+    QPushButton *prevButton_;
+    QPushButton *netButton_;
+    QPushButton *quitButton_;
+    QSplitter *listSplitter_;
+    QMenu *formatMenu_;
+    QMenu *styleMenu_;
+    QMenu *fileMenu_;
+    QMenu *settingsMenu_;
+    QMenu *helpMenu_;
+    QMenu *aboutMenu_;
+    QSlider *seekSlider_;
+    QLabel *progressTimeLabel_;
+    QLabel *totalTimeLabel_;
+    QTimer *guiUpdater_;
 
     //models and structure
-    QListListView *listListView;
-    QListListModel *listListModel;
-    QPlayListView *listView;
+    QListListView *listListView_;
+    QListListModel *listListModel_;
+    QPlayListView *listView_;
 
-    QPlayListModel *nowPlayingPlaylist;
-    QSearchListModel *nowPlayingSearch;
+    QPlayListModel *nowPlayingPlaylist_;
+    QSearchListModel *nowPlayingSearch_;
 
-    QPlayListModel *playListModel;
-    QSearchListModel *searchListModel;
+    QPlayListModel *playListModel_;
+    QSearchListModel *searchListModel_;
 
-    QAction *aboutAction;
-    QAction *exitAction;
-    bool autoRip;
-    SoundSaver::FileType ripFormat;
-    QActionGroup *formatGroup;
-    QActionGroup *styleActionGroup;
-    QAction *selectWavAction;
-    QAction *selectFlacAction;
-    QAction *selectOggAction;
-    QAction *selectMp3Action;
-    QAction *toggleAutoRipAction;
+    QAction *aboutAction_;
+    QAction *exitAction_;
+    bool autoRip_;
+    SoundSaver::FileType ripFormat_;
+    QActionGroup *formatGroup_;
+    QActionGroup *styleActionGroup_;
+    QAction *selectWavAction_;
+    QAction *selectFlacAction_;
+    QAction *selectOggAction_;
+    QAction *selectMp3Action_;
+    QAction *toggleAutoRipAction_;
 
     //functions
     void setupGUI();
