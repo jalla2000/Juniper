@@ -41,11 +41,9 @@ class SpotWorker : public QObject {
     Q_OBJECT
 
  public:
-    
+
     sp_session *currentSession;
 
-    AlsaWorker *alsaWorker;
-    SoundSaver *soundSaver;
     QTimer *eventTimer;
     /// A global reference to the search we are currently investigating
     sp_search *g_search;
@@ -54,7 +52,7 @@ class SpotWorker : public QObject {
     static SpotWorker* getInstance();
     ~SpotWorker()
     {
-        instanceFlag = false;
+        instanceFlag_ = false;
     }
     int start(QString username, QString password);
 
@@ -89,7 +87,7 @@ class SpotWorker : public QObject {
     int emitMusicDeliverySignal(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames);
     void emitPlayTokenLostSignal(sp_session *session);
     //TODO: log_message signal
-    
+
     void emitSessionTerminatedSignal(void);
     void emitSessionReadySignal(sp_session *session);
     void emitSearchCompleteSignal(sp_search *search);
@@ -109,16 +107,20 @@ class SpotWorker : public QObject {
     bool isStreaming();
 
  private:
-    static bool instanceFlag;
-    static SpotWorker *workerInstance;
+
+    /* variables */
+    static bool instanceFlag_;
+    static SpotWorker *workerInstance_;
     SpotWorker(QObject *parent = 0);
-    int totalFrames;
-    int frameCounter;
-    QTimer *watchDog;
-    bool streaming;
-    
-    QTcpServer *tcpServer;
-    QTcpSocket *clientConnection;
+    int totalFrames_;
+    int frameCounter_;
+    QTimer *watchDog_;
+    bool streaming_;
+    AlsaWorker *alsaWorker_;
+    SoundSaver *soundSaver_;
+
+    QTcpServer *tcpServer_;
+    QTcpSocket *clientConnection_;
     typedef struct spacket {
 	uint32_t state;
 	uint32_t type;
@@ -126,8 +128,10 @@ class SpotWorker : public QObject {
 	uint32_t xfered;
 	uint8_t data[MAX_PACKET_SIZE];
     } spotPacket;
-    spotPacket serverData;
-    QMutex *controlMutex;
+    spotPacket serverData_;
+    QMutex *controlMutex_;
+
+    /* functions */
     void parsePacket();
 
  public slots:

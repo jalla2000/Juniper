@@ -30,6 +30,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define DEBUGLEVEL 0
+#define DEBUG if(DEBUGLEVEL)
+
 QPlayListModel::QPlayListModel(sp_playlist *pl, QObject *parent)
   : QAbstractTableModel(parent)
 {
@@ -93,7 +96,7 @@ int QPlayListModel::getTrackCount()
 
 sp_track *QPlayListModel::getTrack(const QModelIndex &index)
 {
-    printf("getTrack called\n");
+    DEBUG printf("getTrack called\n");
     int row = index.row();
     return sp_playlist_track(spPlayList_, row);
 }
@@ -179,6 +182,6 @@ bool QPlayListModel::insertRows(int row, sp_track *track)
     //QAbstractTableModel::endInsertRows();
     Q_UNUSED(track);
     Q_UNUSED(row);
-    printf("insertRows called\n");
+    DEBUG printf("insertRows called\n");
     return true;
 }

@@ -32,6 +32,9 @@
 #include "qlistlistmodel.hpp"
 #include <stdlib.h>
 
+#define DEBUGLEVEL 0
+#define DEBUG if(DEBUGLEVEL)
+
 QListListView::QListListView(QWidget *parent)
   : QListView(parent)
 {

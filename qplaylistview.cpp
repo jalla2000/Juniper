@@ -34,6 +34,9 @@
 #include "qplaylistmodel.hpp"
 #include <stdlib.h>
 
+#define DEBUGLEVEL 0
+#define DEBUG if(DEBUGLEVEL)
+
 QPlayListView::QPlayListView(QWidget *parent)
   : QTableView(parent)
 {
@@ -60,7 +63,6 @@ QPlayListView::QPlayListView(QWidget *parent)
      this->verticalHeader()->setVisible(false);
      this->setSelectionBehavior(QAbstractItemView::SelectRows);
      this->setAlternatingRowColors(true);
-     
 }
 
 void QPlayListView::contextMenuEvent(QContextMenuEvent * /*event*/)

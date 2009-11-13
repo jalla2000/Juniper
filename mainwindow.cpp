@@ -51,11 +51,14 @@
 #include "qsearchlistmodel.hpp"
 #include "qplaylistview.hpp"
 
+#define DEBUGLEVEL 0
+#define DEBUG if(DEBUGLEVEL)
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
 
-    printf("MainWindow is being instantiated!\n");
+    DEBUG printf("MainWindow is being instantiated!\n");
 
     listListModel_ = new QListListModel(NULL);    this->setWindowTitle("Juniper");
     autoRip_ = false;
@@ -64,13 +67,13 @@ MainWindow::MainWindow(QWidget *parent)
     guiUpdater_ = new QTimer;
     spotWorker = SpotWorker::getInstance();
     spotWorker->start(getUsername(), getPassword());
-    printf("SpotWorker started\n");
+    DEBUG printf("SpotWorker started\n");
 
     setupGUI();
-    printf("GUI constructed\n");
+    DEBUG printf("GUI constructed\n");
 
     connectSignals();
-    printf("Signals connected\n");
+    DEBUG printf("Signals connected\n");
 
     guiUpdater_->start(200);
 
@@ -80,9 +83,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::setupGUI()
 {
-    
+
     QWidget *mainWidget = new QWidget;
-    
+
     mainWidget->setObjectName(QString("mainWidget"));
     //mainWidget->setStyleSheet("QWidget#mainWidget { background-image: url(gfx/background4.gif)}");
     setCentralWidget(mainWidget);
@@ -249,7 +252,7 @@ void MainWindow::connectSignals()
 
 void MainWindow::executeSearch()
 {
-  printf("MainWindow: slot executeSearch() was signaled!\n");
+  DEBUG printf("MainWindow: slot executeSearch() was signaled!\n");
 
   const QString sstr = searchBox_->text();
   //int length = sstr.length();
@@ -263,13 +266,13 @@ void MainWindow::executeSearch()
 
 void MainWindow::songDoubleClicked(const QModelIndex &index)
 {
-    printf("Song doubleclicked... Trying to play it...\n");
+    DEBUG printf("Song doubleclicked... Trying to play it...\n");
 
     sp_track* track = listListModel_->getTrack(index);
 
-    printf("Loading player...\n");
+    DEBUG printf("Loading player...\n");
     spotWorker->loadPlayer(track, autoRip_, ripFormat_);
-    printf("Playing player...\n");
+    DEBUG printf("Playing player...\n");
     playButton_->setText("Stop"); //TODO pål
     spotWorker->playPlayer(true);
 }
@@ -283,14 +286,16 @@ void MainWindow::playStop()
 //public slot
 void MainWindow::searchComplete(sp_search *search)
 {
-    printf("MainWindow: signal searchComplete received!\n");
-    
+    DEBUG printf("MainWindow: signal searchComplete received!\n");
+
     int i;
-    
-    printf("Query          : %s\n", sp_search_query(search));
-    printf("Did you mean   : %s\n", sp_search_did_you_mean(search));
-    printf("Tracks in total: %d\n", sp_search_total_tracks(search));
-    
+
+    DEBUG {
+	printf("Query          : %s\n", sp_search_query(search));
+	printf("Did you mean   : %s\n", sp_search_did_you_mean(search));
+	printf("Tracks in total: %d\n", sp_search_total_tracks(search));
+    }
+
     for (i = 0; i < sp_search_num_tracks(search) && i < 40; ++i){
 
 	sp_track *track = sp_search_track(search, i);
@@ -301,7 +306,7 @@ void MainWindow::searchComplete(sp_search *search)
 	//sp_artist *tartist = sp_track_artist(track, 0);
 	//const char *artistName = sp_artist_name(tartist);
 
-	printf("  Track \"%s\" [%d:%02d] has %d artist(s), %d%% popularity\n",
+	DEBUG printf("  Track \"%s\" [%d:%02d] has %d artist(s), %d%% popularity\n",
 	       sp_track_name(track),
 	       duration / 60000,
 	       (duration / 1000) / 60,
@@ -309,15 +314,15 @@ void MainWindow::searchComplete(sp_search *search)
 	       sp_track_popularity(track));
     }
 
-    printf("mainwindow.cpp: Adding search to listlistmodel\n");
+    DEBUG printf("mainwindow.cpp: Adding search to listlistmodel\n");
     listListModel_->addSearch(search);
     //TODO: free the previous model before allocating a new
-    printf("mainwindow.cpp: Creating searchlistmodel\n");
+    DEBUG printf("mainwindow.cpp: Creating searchlistmodel\n");
     searchListModel_ = new QSearchListModel(search, listView_);
-    printf("mainwindow.cpp: Setting searchlistmodel\n");
+    DEBUG printf("mainwindow.cpp: Setting searchlistmodel\n");
     listView_->setModel(searchListModel_);
 
-    printf("mainwindow.cpp: Executing messy code\n");
+    DEBUG printf("mainwindow.cpp: Executing messy code\n");
     QHeaderView *header = listView_->horizontalHeader();
     header->setStretchLastSection(true);
     listView_->setHorizontalHeader(header);
@@ -385,7 +390,7 @@ void MainWindow::saveUser(QString username, QString password)
     //TODO: save the user
     username = username;
     password = password;
-    printf("Saving user\n");
+    DEBUG printf("Saving user\n");
 }
 
 void MainWindow::updatePlayListList(sp_playlistcontainer *plc)
@@ -406,22 +411,22 @@ void MainWindow::updatePlayListList(sp_playlistcontainer *plc)
 void MainWindow::selectWav()
 {
     toggleFormat(SoundSaver::WAV);
-    printf("File output format changed to: Wav\n");
+    DEBUG printf("File output format changed to: Wav\n");
 }
 void MainWindow::selectFlac()
 {
     toggleFormat(SoundSaver::FLAC);
-    printf("File output format changed to: Flac\n");
+    DEBUG printf("File output format changed to: Flac\n");
 }
 void MainWindow::selectOgg()
 {
     toggleFormat(SoundSaver::OGG);
-    printf("File output format changed to: Ogg\n");
+    DEBUG printf("File output format changed to: Ogg\n");
 }
 void MainWindow::selectMp3()
 {
     toggleFormat(SoundSaver::MP3);
-    printf("File output format changed to: Mp3\n");
+    DEBUG printf("File output format changed to: Mp3\n");
 }
 
 void MainWindow::toggleFormat(SoundSaver::FileType format)
@@ -449,7 +454,7 @@ void MainWindow::toggleFormat(SoundSaver::FileType format)
 
 void MainWindow::toggleAutoRip(bool rip)
 {
-    printf("AutoRip toggled\n");
+    DEBUG printf("AutoRip toggled\n");
     autoRip_ = rip;
 }
 
@@ -458,7 +463,7 @@ void MainWindow::changeStyle(bool checked)
 {
     if (!checked)
 	return;
-    
+
     QAction *action = qobject_cast<QAction *>(sender());
     QStyle *style = QStyleFactory::create(action->data().toString());
     Q_ASSERT(style);
@@ -485,48 +490,46 @@ void MainWindow::checkCurrentStyle()
 void MainWindow::listListClicked(const QModelIndex &index)
 {
     //TODO: pål
-    printf("List in playlistlist clicked, index: %d\n", index.row());
+    DEBUG printf("List in playlistlist clicked, index: %d\n", index.row());
     if(listListModel_->isSearchList(index)){
-	printf("Searchlist clicked\n");
+	DEBUG printf("Searchlist clicked\n");
 	searchListModel_ = new QSearchListModel(listListModel_->getSearchList(index), listView_);
-	printf("Setting model\n");
+	DEBUG printf("Setting model\n");
 	listView_->setModel(playListModel_);
-	printf("Model set\n");
+	DEBUG printf("Model set\n");
     }
     else{
-	printf("Playlist clicked\n");
+	DEBUG printf("Playlist clicked\n");
 	playListModel_ = new QPlayListModel(listListModel_->getPlayList(index), listView_);
-	printf("Setting model\n");
+	DEBUG printf("Setting model\n");
 	listView_->setModel(playListModel_);
-	printf("Model set\n");
+	DEBUG printf("Model set\n");
     }
-
     //connect(listView, SIGNAL(doubleClicked(const QModelIndex)),
     //	this, SLOT(songDoubleClicked(const QModelIndex)) );
-    
 }
 
 void MainWindow::listListDoubleClicked(const QModelIndex &/*item*/)
 {
     //TODO: pål
-    printf("Playlist clicked...\n");
+    DEBUG printf("Playlist clicked...\n");
 }
 
 QString MainWindow::getUsername(void)
 {
   QFile file("user.cfg");
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-    printf("Failed to open user file\n");
+    DEBUG printf("Failed to open user file\n");
     return NULL;
   }
-  
+
   QTextStream in(&file);
   QString line = in.readLine();
 
   const QByteArray qba = line.toUtf8();
   const char *ss = qba.data();
 
-  printf("Returning username: %s\n", ss);
+  DEBUG printf("Returning username: %s\n", ss);
 
   return line;
 }
@@ -548,8 +551,6 @@ QString MainWindow::getPassword(void)
 
   const QByteArray qba = line.toUtf8();
   const char *ss = qba.data();
-
-  printf("Returning password: %s\n", ss);
-  
+  DEBUG printf("Returning password: %s\n", ss);
   return line;
 }

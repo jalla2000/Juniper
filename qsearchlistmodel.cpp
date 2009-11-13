@@ -29,6 +29,9 @@
 #include "qsearchlistmodel.hpp"
 #include <stdlib.h>
 
+#define DEBUGLEVEL 0
+#define DEBUG if(DEBUGLEVEL)
+
 QSearchListModel::QSearchListModel(sp_search *pl, QObject *parent)
   : QAbstractTableModel(parent)
 {

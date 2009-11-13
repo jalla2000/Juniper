@@ -38,6 +38,9 @@
 #include "alsaworker.hpp"
 #include <sndfile.h>
 
+#define DEBUGLEVEL 0
+#define DEBUG if(DEBUGLEVEL)
+
 AlsaWorker::AlsaWorker(QObject *parent)
     : QThread(parent)
 {
@@ -65,7 +68,7 @@ snd_pcm_t *AlsaWorker::alsaOpen(char *dev, int rate, int channels)
 	snd_pcm_uframes_t period_size;
 	snd_pcm_uframes_t buffer_size;
 
-	printf("Bitrate: %d rate, Channels: %d\n", rate, channels);
+	DEBUG printf("Bitrate: %d rate, Channels: %d\n", rate, channels);
 
 	if ((r = snd_pcm_open(&h, dev, SND_PCM_STREAM_PLAYBACK, 0) < 0))
 		return NULL;
@@ -191,7 +194,7 @@ snd_pcm_t *AlsaWorker::alsaOpen(char *dev, int rate, int channels)
 
 void AlsaWorker::run()
 {
-    printf("Starting alsaThread!\n");
+    DEBUG printf("Starting alsaThread!\n");
 
     audio_fifo_t *af = &output_audiofifo;
     snd_pcm_t *h = NULL;
