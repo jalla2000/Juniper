@@ -45,7 +45,7 @@ AlsaWorker::AlsaWorker(QObject *parent)
     this->audioInit();
 
     notifyMutex = new QMutex();
-    this->paused = false;
+    this->paused_ = false;
 
 }
 
@@ -191,21 +191,21 @@ snd_pcm_t *AlsaWorker::alsaOpen(char *dev, int rate, int channels)
 
 void AlsaWorker::run()
 {
-    printf("Starting alsaThread!\n");    
-    
+    printf("Starting alsaThread!\n");
+
     audio_fifo_t *af = &output_audiofifo;
     snd_pcm_t *h = NULL;
     int c;
     int cur_channels = 0;
     int cur_rate = 0;
-    
+
     audio_fifo_data_t *afd;
-    
+
     for (;;) {
 
-	if(paused){
+	if(paused_){
 	    msleep(100);
-	    this->playing = false;
+	    this->playing_ = false;
 	}
 	else{
 
@@ -213,40 +213,40 @@ void AlsaWorker::run()
 
 	    while (!(afd = TAILQ_FIRST(&af->q)))
 		af->cond.wait(&af->mutex);
-	    
+
 	    TAILQ_REMOVE(&af->q, afd, link);
 	    af->qlen -= afd->nsamples;
-	    
+
 	    af->mutex.unlock();
-	    
+
 	    if (!h || cur_rate != afd->rate || cur_channels != afd->channels) {
 		if (h) snd_pcm_close(h);
-		
+
 		cur_rate = afd->rate;
 		cur_channels = afd->channels;
-		
+
 		h = this->alsaOpen((char *)"default", cur_rate, cur_channels);
-		
+
 		if (!h) {
 		    fprintf(stderr, "Failed to open ALSA device (%d channels, %d Hz), dying\n",
 			    cur_channels, cur_rate);
 		    exit(1);
 		}
 	    }
-	    	    
+
 	    c = snd_pcm_wait(h, 1000);
-	    
+
 	    if (c >= 0)
 		c = snd_pcm_avail_update(h);
-	    
+
 	    if (c == -EPIPE)
 		snd_pcm_prepare(h);
-	    
-	    snd_pcm_writei(h, afd->samples, afd->nsamples);	    
+
+	    snd_pcm_writei(h, afd->samples, afd->nsamples);
 	    free(afd);
 
 	    watchDog->start(1000);
-	    this->playing = true;
+	    this->playing_ = true;
 	}
     }
 }
@@ -255,7 +255,7 @@ void AlsaWorker::audioInit()
 {
     TAILQ_INIT(&output_audiofifo.q);
     output_audiofifo.qlen = 0;
-    
+
     watchDog = new QTimer();
     connect(watchDog, SIGNAL(timeout()), SLOT(playbackStopped()) );
     watchDog->start(1000);
@@ -281,20 +281,20 @@ void AlsaWorker::pause(bool p)
 {
     audio_fifo_t *af = &output_audiofifo;
     af->mutex.lock();
-    this->paused = p;
-    this->playing = !p;
+    this->paused_ = p;
+    this->playing_ = !p;
     af->mutex.unlock();
 }
 
 int AlsaWorker::musicDelivery(sp_session * /*session*/,
-			       const sp_audioformat *format, 
-			       const void *frames, 
+			       const sp_audioformat *format,
+			       const void *frames,
 			       int num_frames)
 {
     audio_fifo_t *af = &output_audiofifo;
     audio_fifo_data_t *afd;
     size_t s;
-    
+
     if (num_frames == 0) {
 	notifyMutex->lock();
 	g_playback_done = 1;
@@ -302,43 +302,42 @@ int AlsaWorker::musicDelivery(sp_session * /*session*/,
 	notifyMutex->unlock();
 	return 0;
     }
-    
+
     af->mutex.lock();
-    
+
     // buffer some amount of audio data
     if (af->qlen > format->sample_rate*100) {
-	
+
 	af->mutex.unlock();
 	return 0;
     }
-    
+
     s = num_frames * sizeof(int16_t) * format->channels;
-    
+
     afd = reinterpret_cast<audio_fifo_data_t *>(malloc(sizeof(audio_fifo_data_t) + s));
     memcpy(afd->samples, frames, s);
-    
+
     afd->nsamples = num_frames;
-    
+
     afd->rate = format->sample_rate;
     afd->channels = format->channels;
-    
+
     TAILQ_INSERT_TAIL(&af->q, afd, link);
     af->qlen += num_frames;
-    
+
     af->cond.wakeAll();
     af->mutex.unlock();
     //printf("Ate %d samples! Buffer size: %d\n", num_frames, af->qlen);
 
     return num_frames;
-    
 }
 
 bool AlsaWorker::isPlaying()
 {
-    return this->playing;
+    return this->playing_;
 }
 
 void AlsaWorker::playbackStopped()
 {
-    this->playing = false;
+    this->playing_ = false;
 }

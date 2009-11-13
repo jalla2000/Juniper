@@ -49,14 +49,12 @@ class AlsaWorker : public QThread {
 	int nsamples;
 	int16_t samples[0];
     } audio_fifo_data_t;
-    
+
     typedef struct audio_fifo {
 	TAILQ_HEAD(, audio_fifo_data) q;
 	int qlen;
 	QMutex mutex;
         QWaitCondition cond;
-	//pthread_mutex_t mutex;
-	//pthread_cond_t cond;
     } audio_fifo_t;
 
     audio_fifo_t output_audiofifo;
@@ -90,9 +88,9 @@ class AlsaWorker : public QThread {
     bool isPlaying();
 
  private:
-    int frameCounter;
-    bool paused;
-    bool playing;
+    int frameCounter_;
+    bool paused_;
+    bool playing_;
 
  signals:
     void soundData(const void *frames, int count);
