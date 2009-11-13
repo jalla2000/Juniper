@@ -40,12 +40,10 @@ QListListView::QListListView(QWidget *parent)
 
 /*void QPlayListView::contextMenuEvent(QContextMenuEvent *event)
 {
-    
     QMenu menu(this);
     menu.addAction(cutAct);
     menu.addAction(copyAct);
     menu.addAction(pasteAct);
     menu.exec(event->globalPos());
-    
 }
 */

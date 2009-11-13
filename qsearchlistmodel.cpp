@@ -32,8 +32,8 @@
 QSearchListModel::QSearchListModel(sp_search *pl, QObject *parent)
   : QAbstractTableModel(parent)
 {
-  this->searchList = pl;
-  this->columns = 3;
+  this->searchList_ = pl;
+  this->columns_ = 3;
 }
 
 QVariant QSearchListModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -72,7 +72,7 @@ int QSearchListModel::rowCount(const QModelIndex &index) const
     Q_UNUSED(index);
     //printf("This: %p\n", this);
     //printf("List: %p\n", this->list);
-    int count = sp_search_num_tracks(this->searchList);
+    int count = sp_search_num_tracks(this->searchList_);
     //printf("Count: %d\n", count);
     return count;
 }
@@ -80,27 +80,27 @@ int QSearchListModel::rowCount(const QModelIndex &index) const
 int QSearchListModel::columnCount(const QModelIndex &index) const
 {
     Q_UNUSED(index);
-    return this->columns;
+    return columns_;
 }
 
 sp_track *QSearchListModel::getTrack(const QModelIndex &index)
 {
     int row = index.row();
-    return sp_search_track(this->searchList, row);
+    return sp_search_track(this->searchList_, row);
 }
 
 QVariant QSearchListModel::data(const QModelIndex &index, int role) const
 {
-    
+
     //printf("Role: %d\n", role);
 
     if(role==Qt::DisplayRole){
-	
+
 	int row = index.row();
 	int column = index.column();
 	//printf("requesting row %d\n", row);
-	sp_track *track = sp_search_track(this->searchList, row);
-	
+	sp_track *track = sp_search_track(this->searchList_, row);
+
 	switch(column){
 	case 0: {
 	    const char *trackName = sp_track_name(track);
@@ -135,7 +135,7 @@ QVariant QSearchListModel::data(const QModelIndex &index, int role) const
 
     /*
     const char *foo = "bar";
-    
+
     int column = index.column();
     */
 

@@ -31,11 +31,11 @@
 class QListListView : public QListView
 {
     Q_OBJECT
-	
+
  public:
     QListListView(QWidget *parent = 0);
  private:
-    
+
  protected:
     //void contextMenuEvent(QContextMenuEvent *event);
 

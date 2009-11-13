@@ -33,8 +33,8 @@
 QPlayListModel::QPlayListModel(sp_playlist *pl, QObject *parent)
   : QAbstractTableModel(parent)
 {
-  this->playList = pl;
-  this->columns = 3;
+  this->spPlayList_ = pl;
+  this->columns_ = 3;
 }
 
 QVariant QPlayListModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -73,7 +73,7 @@ int QPlayListModel::rowCount(const QModelIndex &index) const
     Q_UNUSED(index);
     //printf("This: %p\n", this);
     //printf("List: %p\n", this->list);
-    int count = sp_playlist_num_tracks(this->playList);
+    int count = sp_playlist_num_tracks(this->spPlayList_);
     //printf("Tracks in this list: %d\n", count);
     return count;
 }
@@ -82,12 +82,12 @@ int QPlayListModel::columnCount(const QModelIndex &index) const
 {
     Q_UNUSED(index);
     //printf("columnCount requested\n");
-    return this->columns;
+    return columns_;
 }
 
 int QPlayListModel::getTrackCount()
 {
-    int count = sp_playlist_num_tracks(this->playList);
+    int count = sp_playlist_num_tracks(this->spPlayList_);
     return count;
 }
 
@@ -95,7 +95,7 @@ sp_track *QPlayListModel::getTrack(const QModelIndex &index)
 {
     printf("getTrack called\n");
     int row = index.row();
-    return sp_playlist_track(this->playList, row);
+    return sp_playlist_track(spPlayList_, row);
 }
 
 QVariant QPlayListModel::data(const QModelIndex &index, int role) const
@@ -108,7 +108,7 @@ QVariant QPlayListModel::data(const QModelIndex &index, int role) const
 	int row = index.row();
 	int column = index.column();
 	//printf("Requesting DisplayRole data for row %d, col %d\n", row, column);
-	sp_track *track = sp_playlist_track(this->playList, row);
+	sp_track *track = sp_playlist_track(spPlayList_, row);
 	//if(!track)
 	    //printf("Epic fail. sp_playlist_track returned null-pointer\n");
 	int artistCount = sp_track_num_artists(track);
@@ -157,7 +157,7 @@ QVariant QPlayListModel::data(const QModelIndex &index, int role) const
 
     /*
     const char *foo = "bar";
-    
+
     int column = index.column();
     */
 

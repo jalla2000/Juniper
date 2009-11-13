@@ -44,9 +44,9 @@ class QPlayListModel : public QAbstractTableModel
     QVariant headerData(int section, Qt::Orientation orient, int role) const;
 
  private:
-    sp_playlist *playList;
-    int columns;
-    int currentTrack;
+    sp_playlist *spPlayList_;
+    int columns_;
+    int currentTrack_;
 };
 
 #endif

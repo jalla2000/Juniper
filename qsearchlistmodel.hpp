@@ -40,12 +40,12 @@ class QSearchListModel : public QAbstractTableModel
     QVariant data(const QModelIndex &index, int role) const;
     //bool insertRows(int row, sp_track *track);
     sp_track *getTrack(const QModelIndex &index);
-    QVariant headerData(int section, Qt::Orientation orient, int role) const;    
-    
+    QVariant headerData(int section, Qt::Orientation orient, int role) const;
+
  private:
-    sp_search *searchList;
-    int columns;
-    int currentTrack;
+    sp_search *searchList_;
+    int columns_;
+    int currentTrack_;
 };
 
 #endif
