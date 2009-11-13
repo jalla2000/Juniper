@@ -30,6 +30,7 @@
 #include <spotify/api.h>
 #include "qlistlistmodel.hpp"
 #include <stdlib.h>
+#include <stdio.h>
 
 QListListModel::QListListModel(sp_playlistcontainer *plc, QObject *parent)
   : QAbstractItemModel(parent)
@@ -174,7 +175,9 @@ bool QListListModel::insertRows(int row, sp_track *track)
 
 void QListListModel::addSearch(sp_search *search)
 {
+    printf("QListListModel::addSearch: appending searchlist\n");
     this->searchLists->append(search);
+    printf("QListListModel::addSearch: setting selectedIndex\n");
     this->selectedIndex = searchLists->size()-1;
 }
 

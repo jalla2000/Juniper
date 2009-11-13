@@ -52,65 +52,26 @@
 #include "qplaylistview.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
-  : QMainWindow(parent)
+    : QMainWindow(parent)
 {
 
     printf("MainWindow is being instantiated!\n");
 
-    this->setWindowTitle("Juniper");
-
+    listListModel = new QListListModel(NULL);    this->setWindowTitle("Juniper");
     autoRip = false;
-    ripFormat = SoundSaver::MP3;    
+    ripFormat = SoundSaver::MP3;
 
+    guiUpdater = new QTimer;
     spotWorker = SpotWorker::getInstance();
     spotWorker->start(getUsername(), getPassword());
-
     printf("SpotWorker started\n");
 
     setupGUI();
-
     printf("GUI constructed\n");
 
-    QTimer *guiUpdater = new QTimer;
-
-    connect(guiUpdater, SIGNAL(timeout()),
-	    this, SLOT(updateGui()) );
-
-    connect(spotWorker, SIGNAL(playListsDiscovered(sp_playlistcontainer*)),
-	    this, SLOT(updatePlayListList(sp_playlistcontainer*)) );
-
-    connect(netButton, SIGNAL(clicked()), spotWorker, SLOT(startServer()));
-
-    connect(selectWavAction, SIGNAL(triggered()), this, SLOT(selectWav()) ); 
-    connect(selectFlacAction, SIGNAL(triggered()), this, SLOT(selectFlac()) ); 
-    connect(selectOggAction, SIGNAL(triggered()), this, SLOT(selectOgg()) ); 
-    connect(selectMp3Action, SIGNAL(triggered()), this, SLOT(selectMp3()) );     
-
-    connect(toggleAutoRipAction, SIGNAL(toggled(bool)),
-	    this, SLOT(toggleAutoRip(bool)) );
-
-    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
-    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
-    connect(playButton, SIGNAL(clicked()), this, SLOT(playStop()));
-
-    connect(listListView, SIGNAL(clicked(const QModelIndex)),
-	    this, SLOT(listListClicked(const QModelIndex)) );
-    connect(listListView, SIGNAL(doubleClicked(const QModelIndex)),
-	    this, SLOT(listListDoubleClicked(const QModelIndex)) );
-
-    connect( searchBox, SIGNAL(returnPressed()), this, SLOT(executeSearch()) );
-    connect( searchButton, SIGNAL(clicked()), this, SLOT(executeSearch()) );
-    connect( quitButton, SIGNAL(clicked()), qApp, SLOT(quit()) );
-
-    connect(spotWorker, SIGNAL(searchComplete(sp_search*)), 
-	    this, SLOT(searchComplete(sp_search*)) );
-    connect(spotWorker, SIGNAL(loggedOut(sp_session*)),
-	    this, SLOT(loginFailed()) );
-
-    connect(listView, SIGNAL(doubleClicked(const QModelIndex)),
-	    this, SLOT(songDoubleClicked(const QModelIndex)) );
-
+    connectSignals();
     printf("Signals connected\n");
+
     guiUpdater->start(200);
 
     this->show();
@@ -248,6 +209,47 @@ void MainWindow::setupGUI()
 
 }
 
+void MainWindow::connectSignals()
+{
+    connect(guiUpdater, SIGNAL(timeout()),
+	    this, SLOT(updateGui()) );
+
+    connect(spotWorker, SIGNAL(playListsDiscovered(sp_playlistcontainer*)),
+	    this, SLOT(updatePlayListList(sp_playlistcontainer*)) );
+
+    connect(netButton, SIGNAL(clicked()), spotWorker, SLOT(startServer()));
+
+    connect(selectWavAction, SIGNAL(triggered()), this, SLOT(selectWav()) ); 
+    connect(selectFlacAction, SIGNAL(triggered()), this, SLOT(selectFlac()) ); 
+    connect(selectOggAction, SIGNAL(triggered()), this, SLOT(selectOgg()) ); 
+    connect(selectMp3Action, SIGNAL(triggered()), this, SLOT(selectMp3()) );     
+
+    connect(toggleAutoRipAction, SIGNAL(toggled(bool)),
+	    this, SLOT(toggleAutoRip(bool)) );
+
+    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+    connect(playButton, SIGNAL(clicked()), this, SLOT(playStop()));
+
+    connect(listListView, SIGNAL(clicked(const QModelIndex)),
+	    this, SLOT(listListClicked(const QModelIndex)) );
+    connect(listListView, SIGNAL(doubleClicked(const QModelIndex)),
+	    this, SLOT(listListDoubleClicked(const QModelIndex)) );
+
+    connect( searchBox, SIGNAL(returnPressed()), this, SLOT(executeSearch()) );
+    connect( searchButton, SIGNAL(clicked()), this, SLOT(executeSearch()) );
+    connect( quitButton, SIGNAL(clicked()), qApp, SLOT(quit()) );
+
+    connect(spotWorker, SIGNAL(searchComplete(sp_search*)), 
+	    this, SLOT(searchComplete(sp_search*)) );
+    connect(spotWorker, SIGNAL(loggedOut(sp_session*)),
+	    this, SLOT(loginFailed()) );
+
+    connect(listView, SIGNAL(doubleClicked(const QModelIndex)),
+	    this, SLOT(songDoubleClicked(const QModelIndex)) );
+
+}
+
 void MainWindow::executeSearch()
 {
   printf("MainWindow: slot executeSearch() was signaled!\n");
@@ -295,7 +297,6 @@ void MainWindow::searchComplete(sp_search *search)
     for (i = 0; i < sp_search_num_tracks(search) && i < 40; ++i){
 
 	sp_track *track = sp_search_track(search, i);
-	//Extract interesting information
 	int duration = sp_track_duration(track);
 	//sp_album *talbum = sp_track_album(track);
 	//const char *albumTitle = sp_album_name(talbum);
@@ -303,40 +304,15 @@ void MainWindow::searchComplete(sp_search *search)
 	//sp_artist *tartist = sp_track_artist(track, 0);
 	//const char *artistName = sp_artist_name(tartist);
 
-	//test... play first hit
-	//if(i==0){
-	//    worker->loadPlayer(track);
-	//    worker->playPlayer(true);
-	//}
-	
 	printf("  Track \"%s\" [%d:%02d] has %d artist(s), %d%% popularity\n",
 	       sp_track_name(track),
 	       duration / 60000,
 	       (duration / 1000) / 60,
 	       sp_track_num_artists(track),
 	       sp_track_popularity(track));
-
-	//int rowIndex = playList->rowCount();
-	//playList->insertRow(rowIndex);
-	
-	//QTableWidgetItem *titleCell = new QTableWidgetItem(QString::number(sp_track_num_artists(track)), 0);
-	
-	/*
-	QTableWidgetItem *titleCell = new QTableWidgetItem(artistName, 0);
-	QTableWidgetItem *artistCell = new QTableWidgetItem(sp_track_name(track), 0);
-	QTableWidgetItem *albumCell = new QTableWidgetItem(albumTitle, 0);
-	*/
-	
-	//plmodel->insertRows(tablePointer->rowCount(), track);
-	    
-	//playList->setItem(rowIndex, 0, titleCell);
-	//playList->setItem(rowIndex, 1, artistCell);
-	//playList->setItem(rowIndex, 2, albumCell);
     }
 
     printf("mainwindow.cpp: Adding search to listlistmodel\n");
-    if(!listListModel) //this is kinda dirty. need cleanup
-	listListModel = new QListListModel(NULL);
     listListModel->addSearch(search);
     //TODO: free the previous model before allocating a new
     printf("mainwindow.cpp: Creating searchlistmodel\n");

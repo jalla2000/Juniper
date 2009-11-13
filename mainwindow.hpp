@@ -76,6 +76,7 @@ class MainWindow : public QMainWindow {
     QSlider *seekSlider;
     QLabel *progressTimeLabel;
     QLabel *totalTimeLabel;
+    QTimer *guiUpdater;
 
     //models and structure
     QListListView *listListView;
@@ -102,6 +103,7 @@ class MainWindow : public QMainWindow {
 
     //functions
     void setupGUI();
+    void connectSignals();
     void toggleFormat(SoundSaver::FileType);
     void saveUser(QString user, QString pass);
     void checkCurrentStyle(void);

@@ -28,6 +28,7 @@
 #include <spotify/api.h>
 #include "qplaylistmodel.hpp"
 #include <stdlib.h>
+#include <stdio.h>
 
 QPlayListModel::QPlayListModel(sp_playlist *pl, QObject *parent)
   : QAbstractTableModel(parent)
