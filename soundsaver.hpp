@@ -33,7 +33,7 @@ class SoundSaver : public QObject {
 
     Q_OBJECT
 
- public:    
+ public:
     enum FileType { WAV, FLAC, OGG, MP3 };
     SoundSaver(QObject *parent = 0);
     void open(const char *path, FileType type);
@@ -41,15 +41,15 @@ class SoundSaver : public QObject {
     void close();
     QString getCurrentFileName();
  private:
-    volatile bool writing;
-    QMutex *writeMutex;
-    FileType fileType;
-    int totalFrames;
-    int frameCounter;
-    SF_INFO wformat;
-    SNDFILE *fileHandle;
-    QString *fileName;
-    QString *fileExtension;
+    volatile bool writing_;
+    QMutex *writeMutex_;
+    FileType fileType_;
+    int totalFrames_;
+    int frameCounter_;
+    SF_INFO wformat_;
+    SNDFILE *fileHandle_;
+    QString *fileName_;
+    QString *fileExtension_;
  signals:
 
  public slots:
