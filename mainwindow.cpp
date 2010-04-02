@@ -214,8 +214,8 @@ void MainWindow::connectSignals()
     connect(guiUpdater_, SIGNAL(timeout()),
 	    this, SLOT(updateGui()) );
 
-    connect(spotWorker, SIGNAL(playListsDiscovered(sp_playlistcontainer*)),
-	    this, SLOT(updatePlayListList(sp_playlistcontainer*)) );
+    connect(spotWorker, SIGNAL(playlistsDiscovered(sp_playlistcontainer*)),
+	    this, SLOT(updatePlaylistList(sp_playlistcontainer*)) );
 
     connect(netButton_, SIGNAL(clicked()), spotWorker, SLOT(startServer()));
 
@@ -318,9 +318,9 @@ void MainWindow::searchComplete(sp_search *search)
     listListModel_->addSearch(search);
     //TODO: free the previous model before allocating a new
     DEBUG printf("mainwindow.cpp: Creating searchlistmodel\n");
-    searchListModel_ = new QSearchListModel(search, listView_);
+    searchlistModel_ = new QSearchListModel(search, listView_);
     DEBUG printf("mainwindow.cpp: Setting searchlistmodel\n");
-    listView_->setModel(searchListModel_);
+    listView_->setModel(searchlistModel_);
 
     DEBUG printf("mainwindow.cpp: Executing messy code\n");
     QHeaderView *header = listView_->horizontalHeader();
@@ -493,16 +493,16 @@ void MainWindow::listListClicked(const QModelIndex &index)
     DEBUG printf("List in playlistlist clicked, index: %d\n", index.row());
     if(listListModel_->isSearchList(index)){
 	DEBUG printf("Searchlist clicked\n");
-	searchListModel_ = new QSearchListModel(listListModel_->getSearchList(index), listView_);
+	searchlistModel_ = new QSearchListModel(listListModel_->getSearchList(index), listView_);
 	DEBUG printf("Setting model\n");
-	listView_->setModel(playListModel_);
+	listView_->setModel(playlistModel_);
 	DEBUG printf("Model set\n");
     }
     else{
 	DEBUG printf("Playlist clicked\n");
-	playListModel_ = new QPlayListModel(listListModel_->getPlayList(index), listView_);
+	playlistModel_ = new QPlayListModel(listListModel_->getPlayList(index), listView_);
 	DEBUG printf("Setting model\n");
-	listView_->setModel(playListModel_);
+	listView_->setModel(playlistModel_);
 	DEBUG printf("Model set\n");
     }
     //connect(listView, SIGNAL(doubleClicked(const QModelIndex)),

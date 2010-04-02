@@ -87,8 +87,8 @@ class MainWindow : public QMainWindow {
     QPlayListModel *nowPlayingPlaylist_;
     QSearchListModel *nowPlayingSearch_;
 
-    QPlayListModel *playListModel_;
-    QSearchListModel *searchListModel_;
+    QPlayListModel *playlistModel_;
+    QSearchListModel *searchlistModel_;
 
     QAction *aboutAction_;
     QAction *exitAction_;

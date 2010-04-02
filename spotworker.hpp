@@ -149,7 +149,7 @@ class SpotWorker : public QObject {
     void connectionError(sp_session *session, sp_error error);
     //TODO: message to user signal
     //TODO: notify main thread? (probably no need)
-    void playListsDiscovered(sp_playlistcontainer *plc);
+    void playlistsDiscovered(sp_playlistcontainer *plc);
     void playTokenLost(sp_session *session);
     //TODO: log_message signal
 
@@ -171,6 +171,13 @@ extern "C" void playlist_added(sp_playlistcontainer *pc,
 extern "C" void playlist_removed(sp_playlistcontainer *pc,
 				 sp_playlist *pl,
 				 int position,
+				 void *userdata);
+extern "C" void playlist_moved(sp_playlistcontainer *pc,
+			       sp_playlist *playlist,
+			       int position,
+			       int new_position,
+			       void *userdata);
+extern "C" void container_loaded(sp_playlistcontainer *pc,
 				 void *userdata);
 extern "C" void tracks_added(sp_playlist *pl,
 			     sp_track *const *tracks,

@@ -81,14 +81,13 @@ static sp_session_callbacks g_callbacks = {
 };
 
 //The playlist container callbacks
-/*
-//TODO: USE OR REMOVE
+
 static sp_playlistcontainer_callbacks pc_callbacks = {
-	playlist_added,
-	playlist_removed,
-	NULL
+	&playlist_added,
+	&playlist_removed,
+	&playlist_moved,
+	&container_loaded
 };
-*/
 
 //The callbacks we are interested in for individual playlists.
 /*
@@ -337,17 +336,21 @@ void SpotWorker::emitLoggedInSignal(sp_session *session, sp_error error)
 
 	emit loggedIn(session, error);
 
-	sp_playlistcontainer *pc = sp_session_playlistcontainer(session);
+	sp_playlistcontainer *playlists = sp_session_playlistcontainer(session);
+	void * userdata = NULL;
+	sp_playlistcontainer_add_callbacks(playlists,
+					   &pc_callbacks,
+					   userdata);
 
 	int i;
-	int listCount = sp_playlistcontainer_num_playlists(pc);
-	printf("%d playlists discovered\n", sp_playlistcontainer_num_playlists(pc));
+	int listCount = sp_playlistcontainer_num_playlists(playlists);
+	printf("%d playlists discovered\n", sp_playlistcontainer_num_playlists(playlists));
 
 	if(listCount > 0)
-	    emit playListsDiscovered(pc);
+	    emit playlistsDiscovered(playlists);
 
-	for (i = 0; i < sp_playlistcontainer_num_playlists(pc); ++i) {
-	    sp_playlist *pl = sp_playlistcontainer_playlist(pc, i);
+	for (i = 0; i < sp_playlistcontainer_num_playlists(playlists); ++i) {
+	    sp_playlist *pl = sp_playlistcontainer_playlist(playlists, i);
 
 	    //TODO: register callback
 	    //sp_playlist_add_callbacks(pl, &pl_callbacks, NULL);
@@ -568,9 +571,11 @@ void SpotWorker::emitSessionTerminatedSignal(void)
  * @param  userdata      The opaque pointer
  */
 extern "C" void playlist_added(sp_playlistcontainer */*pc*/, sp_playlist *pl,
-			       int /*position*/, void * /*userdata*/)
+			       int position, void * /*userdata*/)
 {
-    DEBUG printf("Playlist_added: %s\n", sp_playlist_name(pl));
+    DEBUG printf("SpotWorker: playlist_added: (position: %d, name:%s)\n",
+		 position,
+		 sp_playlist_name(pl));
     sp_playlist_add_callbacks(pl, &pl_callbacks, NULL);
 
     /*    if (!strcasecmp(sp_playlist_name(pl), g_listname)) {
@@ -590,9 +595,37 @@ extern "C" void playlist_added(sp_playlistcontainer */*pc*/, sp_playlist *pl,
  * @param  userdata      The opaque pointer
  */
 extern "C" void playlist_removed(sp_playlistcontainer * /*pc*/, sp_playlist *pl,
-				 int /*position*/, void * /*userdata*/)
+				 int position, void * /*userdata*/)
 {
-	sp_playlist_remove_callbacks(pl, &pl_callbacks, NULL);
+    printf("SpotWorker: playlist_removed (name: %s, position:%d)\n",
+	   sp_playlist_name(pl),
+	   position);
+    sp_playlist_remove_callbacks(pl, &pl_callbacks, NULL);
+}
+
+extern "C" void playlist_moved(sp_playlistcontainer * /*pc*/,
+			       sp_playlist *playlist,
+			       int position,
+			       int new_position,
+			       void * /*userdata*/)
+{
+    DEBUG printf("SpotWorker: playlist_moved (name: %s, pos:before/after=(%d/%d))\n",
+		 sp_playlist_name(playlist),
+		 position,
+		 new_position);
+}
+
+/**
+ * Callback from libspotify, telling us the rootlist is fully synchronized
+ * We just print an informational message
+ *
+ * @param  pc            The playlist container handle
+ * @param  userdata      The opaque pointer
+ */
+extern "C" void container_loaded(sp_playlistcontainer *pc, void * /*userdata*/)
+{
+    DEBUG printf("SpotWorker: container_loaded (%d playlists)\n",
+		 sp_playlistcontainer_num_playlists(pc));
 }
 
 /* --------------------------  PLAYLIST CALLBACKS  ------------------------- */
@@ -615,9 +648,11 @@ extern "C" void tracks_added(sp_playlist * /*pl*/,
 	if (pl != g_jukeboxlist)
 		return;
     */
-	DEBUG printf("%d tracks were added to a playlist\n", num_tracks);
-	fflush(stdout);
+    DEBUG printf("%d tracks were added to a playlist\n", num_tracks);
+    fflush(stdout);
 }
+
+
 
 /**
  * Callback from libspotify, saying that a track has been added to a playlist.
