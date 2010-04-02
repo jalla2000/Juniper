@@ -393,7 +393,7 @@ void MainWindow::saveUser(QString username, QString password)
     DEBUG printf("Saving user\n");
 }
 
-void MainWindow::updatePlayListList(sp_playlistcontainer *plc)
+void MainWindow::updatePlaylistList(sp_playlistcontainer *plc)
 {
     //int listCount = sp_playlistcontainer_num_playlists(plc);
     /*

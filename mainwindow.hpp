@@ -128,7 +128,7 @@ class MainWindow : public QMainWindow {
     void toggleAutoRip(bool);
     void playStop();
     void changeStyle(bool checked);
-    void updatePlayListList(sp_playlistcontainer *plc);
+    void updatePlaylistList(sp_playlistcontainer *plc);
 
 };
 

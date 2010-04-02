@@ -43,7 +43,7 @@
 #include "alsaworker.hpp"
 #include "soundsaver.hpp"
 
-#define DEBUGLEVEL 0
+#define DEBUGLEVEL 1
 #define DEBUG if(DEBUGLEVEL)
 
 /* --- Data --- */
