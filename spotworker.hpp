@@ -47,7 +47,7 @@ class SpotWorker : public QObject {
     QTimer *eventTimer;
     /// A global reference to the search we are currently investigating
     sp_search *g_search;
-    enum PacketType { PLAYSTOP = 1, NEXTBLOCK = 2, SKIP = 3, SEEK = 4, SEARCH = 5 };
+    enum PacketType { PLAYSTOP = 1,NEXTBLOCK = 2, SKIP = 3, SEEK = 4, SEARCH = 5 };
 
     static SpotWorker* getInstance();
     ~SpotWorker()
@@ -75,25 +75,32 @@ class SpotWorker : public QObject {
     void print_artist(sp_artist *artist);
     void print_search(sp_search *search);
 
-    /* signal-emitting C++ functions
-     * for the 9 sp_session_callbacks pointers
-     */
+    /* signal-emitting C++ functions for the 9 sp_session_callbacks */
     void emitLoggedInSignal(sp_session *session, sp_error error);
     void emitLoggedOutSignal(sp_session *session);
     //TODO: metadata signal
     void emitConnectionErrorSignal(sp_session *session, sp_error error);
     //TODO: message to user signal
     //TODO: notify main thread? (probably no need)
-    int emitMusicDeliverySignal(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames);
+    int emitMusicDeliverySignal(sp_session *session,
+				const sp_audioformat *format,
+				const void *frames, int num_frames);
     void emitPlayTokenLostSignal(sp_session *session);
     //TODO: log_message signal
+
+    /* signal emitting C++ functions for the 4 sp_playlistcontainer_callbacks */
+    void emitPlaylistAdded(sp_playlistcontainer * playlists);
+    //void emitPlaylistRemoved(sp_playlistcontainer * playlists);
+    //void emitPlaylistMoved(sp_playlistcontainer * playlists);
+    //void emitContainerLoaded(sp_playlistcontainer * playlists);
 
     void emitSessionTerminatedSignal(void);
     void emitSessionReadySignal(sp_session *session);
     void emitSearchCompleteSignal(sp_search *search);
 
     void performSearch(QString query);
-    //These three funnctions had sp_session *session parameter. removal experimental
+    //These following three funnctions had sp_session *session parameter.
+    //removal experimental
     void loadPlayer(sp_track *track, bool rip, SoundSaver::FileType type);
     void playPlayer(bool play);
     void seekPlayer(int offset);

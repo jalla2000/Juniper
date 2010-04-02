@@ -570,18 +570,22 @@ void SpotWorker::emitSessionTerminatedSignal(void)
  * @param  position      Index of the added playlist
  * @param  userdata      The opaque pointer
  */
-extern "C" void playlist_added(sp_playlistcontainer */*pc*/, sp_playlist *pl,
-			       int position, void * /*userdata*/)
+extern "C" void playlist_added(sp_playlistcontainer *playlists,
+			       sp_playlist *addedPlaylist,
+			       int position,
+			       void * /*userdata*/)
 {
     DEBUG printf("SpotWorker: playlist_added: (position: %d, name:%s)\n",
 		 position,
-		 sp_playlist_name(pl));
-    sp_playlist_add_callbacks(pl, &pl_callbacks, NULL);
+		 sp_playlist_name(addedPlaylist));
+    sp_playlist_add_callbacks(addedPlaylist, &pl_callbacks, NULL);
+    SpotWorker *sw = SpotWorker::getInstance();
+    sw->emitPlaylistAdded(playlists);
+}
 
-    /*    if (!strcasecmp(sp_playlist_name(pl), g_listname)) {
-	g_jukeboxlist = pl;
-    }
-    */
+void SpotWorker::emitPlaylistAdded(sp_playlistcontainer *playlists)
+{
+    emit playlistsDiscovered(playlists);
 }
 
 /**
@@ -594,8 +598,10 @@ extern "C" void playlist_added(sp_playlistcontainer */*pc*/, sp_playlist *pl,
  * @param  position      Index of the removed playlist
  * @param  userdata      The opaque pointer
  */
-extern "C" void playlist_removed(sp_playlistcontainer * /*pc*/, sp_playlist *pl,
-				 int position, void * /*userdata*/)
+extern "C" void playlist_removed(sp_playlistcontainer * /*pc*/,
+				 sp_playlist *pl,
+				 int position,
+				 void * /*userdata*/)
 {
     printf("SpotWorker: playlist_removed (name: %s, position:%d)\n",
 	   sp_playlist_name(pl),
@@ -715,20 +721,11 @@ extern "C" void playlist_renamed(sp_playlist *pl, void * /*userdata*/)
 {
 	const char *name = sp_playlist_name(pl);
 
-	/*
-	if (!strcasecmp(name, g_listname)) {
-	g_jukeboxlist = pl;
-	g_track_index = 0;
-	try_jukebox_start();
-	} else if (g_jukeboxlist == pl) {
-	*/
 	DEBUG printf("Current playlist renamed to \"%s\".\n", name);
-	/*
-	  g_jukeboxlist = NULL;
-	  g_currenttrack = NULL;
-	  sp_session_player_unload(g_sess);
-	  }
-	*/
+	//SpotWorker *sw = SpotWorker::getInstance();
+	//sw->emitPlaylistAdded(playlists);
+
+	//sp_session_player_unload(g_sess);
 }
 
 
