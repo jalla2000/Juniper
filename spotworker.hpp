@@ -164,12 +164,30 @@ extern "C" void play_token_lost(sp_session *session);
 extern "C" void search_complete(sp_search *search, void *userdata);
 
 //playlist callbacks
-extern "C" void playlist_added(sp_playlistcontainer *pc, sp_playlist *pl, int position, void *userdata);
-extern "C" void playlist_removed(sp_playlistcontainer *pc, sp_playlist *pl, int position, void *userdata);
-extern "C" void tracks_added(sp_playlist *pl, const sp_track **tracks,int num_tracks, int position, void *userdata);
-extern "C" void tracks_removed(sp_playlist *pl, const int *tracks, int num_tracks, void *userdata);
-extern "C" void tracks_moved(sp_playlist *pl, const int *tracks, int num_tracks, int new_position, void *userdata);
-extern "C" void playlist_renamed(sp_playlist *pl, void *userdata);
+extern "C" void playlist_added(sp_playlistcontainer *pc,
+			       sp_playlist *pl,
+			       int position,
+			       void *userdata);
+extern "C" void playlist_removed(sp_playlistcontainer *pc,
+				 sp_playlist *pl,
+				 int position,
+				 void *userdata);
+extern "C" void tracks_added(sp_playlist *pl,
+			     sp_track *const *tracks,
+			     int num_tracks,
+			     int position,
+			     void *userdata);
+extern "C" void tracks_removed(sp_playlist *pl,
+			       const int *tracks,
+			       int num_tracks,
+			       void *userdata);
+extern "C" void tracks_moved(sp_playlist *pl,
+			     const int *tracks,
+			     int num_tracks,
+			     int new_position,
+			     void *userdata);
+extern "C" void playlist_renamed(sp_playlist *pl,
+				 void *userdata);
 
 
 #endif

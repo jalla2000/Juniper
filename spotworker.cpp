@@ -76,7 +76,8 @@ static sp_session_callbacks g_callbacks = {
     &notify_main_thread,
     &music_delivery,
     &play_token_lost,
-    &log_message
+    &log_message,
+    NULL
 };
 
 //The playlist container callbacks
@@ -90,16 +91,24 @@ static sp_playlistcontainer_callbacks pc_callbacks = {
 */
 
 //The callbacks we are interested in for individual playlists.
+/*
+void(* 	tracks_added )(sp_playlist *pl, sp_track *const *tracks, int num_tracks, int position, void *userdata)
+void(* 	tracks_removed )(sp_playlist *pl, const int *tracks, int num_tracks, void *userdata)
+void(* 	tracks_moved )(sp_playlist *pl, const int *tracks, int num_tracks, int new_position, void *userdata)
+void(* 	playlist_renamed )(sp_playlist *pl, void *userdata)
+void(* 	playlist_state_changed )(sp_playlist *pl, void *userdata)
+void(* 	playlist_update_in_progress )(sp_playlist *pl, bool done, void *userdata)
+void(* 	playlist_metadata_updated )(sp_playlist *pl, void *userdata)
+ */
 static sp_playlist_callbacks pl_callbacks = {
-	&tracks_added,
-	&tracks_removed,
-	&tracks_moved,
-	&playlist_renamed,
-	NULL,
-	NULL
+    &tracks_added,
+    &tracks_removed,
+    &tracks_moved,
+    &playlist_renamed,
+    NULL,
+    NULL,
+    NULL
 };
-
-
 
 bool SpotWorker::instanceFlag_ = false;
 SpotWorker* SpotWorker::workerInstance_ = NULL;
@@ -202,11 +211,24 @@ int SpotWorker::start(QString username, QString password)
 
 void SpotWorker::performSearch(QString query)
 {
-    //TODO: put query in string
-    const QByteArray qba = query.toUtf8();
-    const char *ss = qba.data();
-    DEBUG printf("Requesting search. Query: %s", ss);
-    g_search = sp_search_create(currentSession, ss, 0, 100, search_complete, NULL);
+    const char *needle = query.toUtf8().data();
+    DEBUG printf("Requesting search. Query: %s", needle);
+    const int track_offset = 0;
+    const int track_count = 100;
+    const int album_offset = 0;
+    const int album_count = 100;
+    const int artist_offset = 0;
+    const int artist_count = 100;
+    g_search = sp_search_create(currentSession,
+				needle,
+				track_offset,
+				track_count,
+				album_offset,
+				album_count,
+				artist_offset,
+				artist_count,
+				search_complete,
+				NULL);
 
     if (!g_search) {
 	fprintf(stderr, "Clay Davis says: Sheeeet! Failed to start search!\n");
@@ -583,8 +605,11 @@ extern "C" void playlist_removed(sp_playlistcontainer * /*pc*/, sp_playlist *pl,
  * @param  position    Where the tracks were inserted
  * @param  userdata    The opaque pointer
  */
-extern "C" void tracks_added(sp_playlist * /*pl*/, const sp_track ** /*tracks*/,
-			     int num_tracks, int /*position*/, void * /*userdata*/)
+extern "C" void tracks_added(sp_playlist * /*pl*/,
+			     sp_track *const * /*tracks*/,
+			     int num_tracks,
+			     int /*position*/,
+			     void * /*userdata*/)
 {
     /*
 	if (pl != g_jukeboxlist)
@@ -630,8 +655,11 @@ extern "C" void tracks_removed(sp_playlist * /*pl*/, const int * /*tracks*/,
  * @param  new_position  To where the tracks were moved
  * @param  userdata      The opaque pointer
  */
-extern "C" void tracks_moved(sp_playlist * /*pl*/, const int * /*tracks*/,
-			     int num_tracks, int /*new_position*/, void * /*userdata*/)
+extern "C" void tracks_moved(sp_playlist * /*pl*/,
+			     const int * /*tracks*/,
+			     int num_tracks,
+			     int /*new_position*/,
+			     void * /*userdata*/)
 {
     //TODO: Use more function parameters
     /*
