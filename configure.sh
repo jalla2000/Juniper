@@ -9,9 +9,8 @@ echo "QT += network" >> juniper.pro
 echo "Generating meta objects..."
 qmake
 echo "Adding libspotify compile flags..."
-# warning. this works, but creates a file named "cat". TODO: correct
-cat make.libflags > cat Makefile > /tmp/juniper.make.temp && mv /tmp/juniper.make.temp Makefile
-sed "s/-pipe -O2 -Wall -W/\$(SPOTFLAGS) -pipe -O2 -Wall -W/" Makefile > tmp.tmp && mv tmp.tmp Makefile
+cat make.libflags > /tmp/juniper.make.temp; cat Makefile >> /tmp/juniper.make.temp && mv /tmp/juniper.make.temp Makefile
+sed -i "s/-pipe -O2 -Wall -W/\$(SPOTFLAGS) -pipe -O2 -Wall -W/" Makefile
 echo -n "Checking for libspotify..."
 if [ ! -e /usr/lib/libspotify.so ]
 then
