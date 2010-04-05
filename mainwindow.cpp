@@ -51,7 +51,7 @@
 #include "qsearchlistmodel.hpp"
 #include "qplaylistview.hpp"
 
-#define DEBUGLEVEL 0
+#define DEBUGLEVEL 1
 #define DEBUG if(DEBUGLEVEL)
 
 MainWindow::MainWindow(QWidget *parent)
@@ -214,7 +214,7 @@ void MainWindow::connectSignals()
     connect(guiUpdater_, SIGNAL(timeout()),
 	    this, SLOT(updateGui()) );
 
-    connect(spotWorker, SIGNAL(playlistsDiscovered(sp_playlistcontainer*)),
+    connect(spotWorker, SIGNAL(playlistAdded(sp_playlistcontainer*)),
 	    this, SLOT(updatePlaylistList(sp_playlistcontainer*)) );
 
     connect(netButton_, SIGNAL(clicked()), spotWorker, SLOT(startServer()));
@@ -254,13 +254,9 @@ void MainWindow::executeSearch()
 {
   DEBUG printf("MainWindow: slot executeSearch() was signaled!\n");
 
+  //printf("SIZE: %d\n", listView_->getModel()->playListCount();
   const QString sstr = searchBox_->text();
-  //int length = sstr.length();
-  //const QByteArray qba = sstr.toUtf8();
-  //int arrsz = qba.size();
-  //const char *ss = qba.data();
-  //printf("Length of string was %d\n", length);
-  //printf("Contents of bytearray: %s\n", ss);
+  printf("calling performsearch\n");
   spotWorker->performSearch(searchBox_->text());
 }
 
@@ -405,6 +401,9 @@ void MainWindow::updatePlaylistList(sp_playlistcontainer *plc)
     if(!listListModel_)
 	listListModel_ = new QListListModel(plc);
     listListView_->setModel(listListModel_);
+    listListView_->update();
+    printf("MainWindow::updatePlaylistList: list model size: %d\n",
+	   listListModel_->playListCount());
 }
 
 
@@ -468,7 +467,6 @@ void MainWindow::changeStyle(bool checked)
     QStyle *style = QStyleFactory::create(action->data().toString());
     Q_ASSERT(style);
     QApplication::setStyle(style);
-
 }
 
 

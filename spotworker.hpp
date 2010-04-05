@@ -94,6 +94,7 @@ class SpotWorker : public QObject {
     //void emitPlaylistMoved(sp_playlistcontainer * playlists);
     //void emitContainerLoaded(sp_playlistcontainer * playlists);
 
+    //void emitPlaylistsDiscovered();
     void emitSessionTerminatedSignal(void);
     void emitSessionReadySignal(sp_session *session);
     void emitSearchCompleteSignal(sp_search *search);
@@ -156,7 +157,8 @@ class SpotWorker : public QObject {
     void connectionError(sp_session *session, sp_error error);
     //TODO: message to user signal
     //TODO: notify main thread? (probably no need)
-    void playlistsDiscovered(sp_playlistcontainer *plc);
+    void playlistAdded(sp_playlistcontainer *plc);
+    void updatePlaylistList();
     void playTokenLost(sp_session *session);
     //TODO: log_message signal
 

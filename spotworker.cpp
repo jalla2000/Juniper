@@ -210,8 +210,9 @@ int SpotWorker::start(QString username, QString password)
 
 void SpotWorker::performSearch(QString query)
 {
-    const char *needle = query.toUtf8().data();
-    DEBUG printf("Requesting search. Query: %s", needle);
+    QByteArray qba = query.toUtf8();
+    const char *needle = qba.data();
+    printf("Requesting search. Query: %s\n", needle);
     const int track_offset = 0;
     const int track_count = 100;
     const int album_offset = 0;
@@ -347,7 +348,7 @@ void SpotWorker::emitLoggedInSignal(sp_session *session, sp_error error)
 	printf("%d playlists discovered\n", sp_playlistcontainer_num_playlists(playlists));
 
 	if(listCount > 0)
-	    emit playlistsDiscovered(playlists);
+	    emit playlistAdded(playlists);
 
 	for (i = 0; i < sp_playlistcontainer_num_playlists(playlists); ++i) {
 	    sp_playlist *pl = sp_playlistcontainer_playlist(playlists, i);
@@ -583,9 +584,15 @@ extern "C" void playlist_added(sp_playlistcontainer *playlists,
     sw->emitPlaylistAdded(playlists);
 }
 
+
+/*void SpotWorker::emitUpdatePlaylistList()
+{
+    emit updatePlaylistList();
+    }*/
+
 void SpotWorker::emitPlaylistAdded(sp_playlistcontainer *playlists)
 {
-    emit playlistsDiscovered(playlists);
+    emit playlistAdded(playlists);
 }
 
 /**
@@ -628,10 +635,12 @@ extern "C" void playlist_moved(sp_playlistcontainer * /*pc*/,
  * @param  pc            The playlist container handle
  * @param  userdata      The opaque pointer
  */
-extern "C" void container_loaded(sp_playlistcontainer *pc, void * /*userdata*/)
+extern "C" void container_loaded(sp_playlistcontainer *playlists, void * /*userdata*/)
 {
     DEBUG printf("SpotWorker: container_loaded (%d playlists)\n",
-		 sp_playlistcontainer_num_playlists(pc));
+		 sp_playlistcontainer_num_playlists(playlists));
+    SpotWorker *sw = SpotWorker::getInstance();
+    sw->emitPlaylistAdded(playlists);
 }
 
 /* --------------------------  PLAYLIST CALLBACKS  ------------------------- */
