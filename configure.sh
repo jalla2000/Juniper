@@ -26,6 +26,6 @@ else
 fi
 if [ "$1" == "all" ]
 then
-    sudo aptitude install libqt4-dev g++ libsndfile-dev
+    sudo aptitude install libqt4-dev build-essential libsndfile-dev libasound-dev libogg-dev lame
 fi
 echo "All done!"
