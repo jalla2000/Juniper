@@ -27,7 +27,7 @@
 #include <QObject>
 #include <QAbstractItemModel>
 
-#include <spotify/api.h>
+#include <libspotify/api.h>
 
 class QListListModel : public QAbstractItemModel
 {

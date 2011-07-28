@@ -27,7 +27,7 @@
 
 #include <QObject>
 #include <QTableView>
-#include <spotify/api.h>
+#include <libspotify/api.h>
 
 class QPlayListView : public QTableView
 {

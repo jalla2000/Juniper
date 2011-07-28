@@ -37,7 +37,7 @@
 #include <QSplitter>
 #include <QGridLayout>
 
-#include <spotify/api.h>
+#include <libspotify/api.h>
 #include "spotworker.hpp"
 #include "qlistlistview.hpp"
 #include "qlistlistmodel.hpp"

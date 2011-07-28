@@ -30,7 +30,7 @@
 #include <stdio.h>
 
 #include "alsaworker.hpp"
-#include <spotify/api.h>
+#include <libspotify/api.h>
 
 class QTcpServer;
 

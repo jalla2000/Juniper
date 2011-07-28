@@ -25,7 +25,7 @@
 #include <QModelIndex>
 #include <QVariant>
 #include <QModelIndex>
-#include <spotify/api.h>
+#include <libspotify/api.h>
 #include "qplaylistmodel.hpp"
 #include <stdlib.h>
 #include <stdio.h>

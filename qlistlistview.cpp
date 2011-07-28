@@ -27,7 +27,7 @@
 #include <QContextMenuEvent>
 #include <QListView>
 
-#include <spotify/api.h>
+#include <libspotify/api.h>
 #include "qlistlistview.hpp"
 #include "qlistlistmodel.hpp"
 #include <stdlib.h>
