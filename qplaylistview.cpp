@@ -29,7 +29,7 @@
 #include <QMenu>
 #include <QHeaderView>
 #include <QContextMenuEvent>
-#include <spotify/api.h>
+#include <libspotify/api.h>
 #include "qplaylistview.hpp"
 #include "qplaylistmodel.hpp"
 #include <stdlib.h>

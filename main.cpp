@@ -22,7 +22,7 @@
  */
 
 #include <stdio.h>
-#include <spotify/api.h>
+#include <libspotify/api.h>
 #include <QApplication>
 #include <QPushButton>
 #include <QWidget>

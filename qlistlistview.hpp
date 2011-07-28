@@ -26,7 +26,7 @@
 
 #include <QObject>
 #include <QListView>
-#include <spotify/api.h>
+#include <libspotify/api.h>
 
 class QListListView : public QListView
 {

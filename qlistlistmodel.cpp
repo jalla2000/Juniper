@@ -27,7 +27,7 @@
 #include <QModelIndex>
 #include <QAbstractItemModel>
 
-#include <spotify/api.h>
+#include <libspotify/api.h>
 #include "qlistlistmodel.hpp"
 #include <stdlib.h>
 #include <stdio.h>
