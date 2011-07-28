@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LIBSPOTIFY="libspotify-0.0.3-linux6-i686"
+LIBSPOTIFY="libspotify-0.0.8-linux6-i686"
 
 # install libspotify into source tree per default
 if [ -z "$SPOTIFY" ]; then
@@ -51,7 +51,7 @@ fi
 # use the LD_LIBRARY_PATH environment variable
 if [ $SPOTIFY = "local" ]; then
     export PKG_CONFIG_PATH=$INSTDIR/lib/pkgconfig
-    LIBSPOTIFY_INSTALLS='INSTALLS+=libspotify libspotify.path=/usr/lib libspotify.files=libspotify/lib/*.so*'
+    LIBSPOTIFY_INSTALLS='INSTALLS+=libspotify libspotify.path=/usr/lib libspotify.files=libspotify/lib/*.so.*'
 fi
 
 

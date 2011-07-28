@@ -37,7 +37,7 @@
 #include <QMessageBox>
 
 // The one and only entrypoint to the libspotify API
-#include <spotify/api.h>
+#include <libspotify/api.h>
 
 #include "spotworker.hpp"
 #include "alsaworker.hpp"
@@ -169,7 +169,7 @@ int SpotWorker::start(QString username, QString password)
     // Register the callbacks.
     config.callbacks = &g_callbacks;
 
-    error = sp_session_init(&config, &currentSession);
+    error = sp_session_create(&config, &currentSession);
 
     if (SP_ERROR_OK != error) {
 	fprintf(stderr, "failed to create session: %s\n",
@@ -178,16 +178,10 @@ int SpotWorker::start(QString username, QString password)
 
     // Login using the credentials given on the command line.
     //printf("Logging in...\n");
-    error = sp_session_login(currentSession, 
-			     username.toUtf8().data(), 
-			     password.toUtf8().data());
-
-    DEBUG printf("sp_session_login returned %d\n", error);
-
-    if (SP_ERROR_OK != error) {
-	fprintf(stderr, "failed to login: %s\n",
-		sp_error_message(error));
-    }
+    // FIXME, add callback for error checking to adjust to API changes
+    sp_session_login(currentSession,
+		     username.toUtf8().data(),
+		     password.toUtf8().data());
 
     eventTimer = new QTimer();
     connect(eventTimer, SIGNAL(timeout()), SLOT(processEvents()) );
@@ -255,14 +249,12 @@ void SpotWorker::loadPlayer(sp_track *track, bool rip, SoundSaver::FileType type
 }
 void SpotWorker::playPlayer(bool play)
 {
-    sp_error err = sp_session_player_play(currentSession, play);
+    sp_session_player_play(currentSession, play);
     alsaWorker_->pause(!play);
-    err = err;
 }
 void SpotWorker::seekPlayer(int offset)
 {
-    sp_error err = sp_session_player_seek(currentSession, offset);
-    err = err;
+    sp_session_player_seek(currentSession, offset);
 }
 bool SpotWorker::isPlaying()
 {

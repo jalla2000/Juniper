@@ -28,7 +28,7 @@
 #include "queue.h"
 #include <alsa/asoundlib.h>
 
-#include <spotify/api.h>
+#include <libspotify/api.h>
 #include <QObject>
 #include <QThread>
 #include <QMutex>

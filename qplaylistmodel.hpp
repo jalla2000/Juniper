@@ -26,7 +26,7 @@
 
 #include <QObject>
 #include <QAbstractTableModel>
-#include <spotify/api.h>
+#include <libspotify/api.h>
 
 class QPlayListModel : public QAbstractTableModel
 {
