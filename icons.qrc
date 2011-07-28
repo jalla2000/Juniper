@@ -1,0 +1,10 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file>gfx/play.png</file>
+  <file>gfx/skip_backward.png</file>
+  <file>gfx/skip_forward.png</file>
+  <file>gfx/stop.png</file>
+  <file>gfx/net.png</file>
+</qresource>
+</RCC>
+

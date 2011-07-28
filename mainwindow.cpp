@@ -60,13 +60,23 @@ MainWindow::MainWindow(QWidget *parent)
 
     DEBUG printf("MainWindow is being instantiated!\n");
 
+    bool initialized=settings.value("main/initialized").toBool();
+
+    if (!initialized){
+        qDebug() << "Setting initial settings...";
+        settings.beginGroup("main");
+        settings.setValue("initialized", true);
+        settings.endGroup();
+    }
+
     listListModel_ = new QListListModel(NULL);    this->setWindowTitle("Juniper");
     autoRip_ = false;
     ripFormat_ = SoundSaver::MP3;
 
     guiUpdater_ = new QTimer;
     spotWorker = SpotWorker::getInstance();
-    spotWorker->start(getUsername(), getPassword());
+    spotWorker->start(settings.value("main/username").toString(),
+                      settings.value("main/password").toString());
     DEBUG printf("SpotWorker started\n");
 
     setupGUI();
@@ -166,10 +176,10 @@ void MainWindow::setupGUI()
     seekSlider_->setValue(0);
 
     buttonPanel_ = new QWidget;
-    prevButton_ = new QPushButton(QPixmap("gfx/skip_backward.png"), "");
-    playButton_ = new QPushButton(QPixmap("gfx/play.png"), "");
-    nextButton_ = new QPushButton(QPixmap("gfx/skip_forward.png"), "");
-    netButton_ = new QPushButton(QPixmap("gfx/net.png"), "");
+    prevButton_ = new QPushButton(QPixmap(":gfx/skip_backward.png"), "");
+    playButton_ = new QPushButton(QPixmap(":gfx/play.png"), "");
+    nextButton_ = new QPushButton(QPixmap(":gfx/skip_forward.png"), "");
+    netButton_ = new QPushButton(QPixmap(":gfx/net.png"), "");
 
     quitButton_ = new QPushButton(tr("Quit"));
     quitButton_->setFont(QFont("Times", 18, QFont::Bold));
@@ -375,9 +385,9 @@ void MainWindow::updateGui()
     }
 
     if(spotWorker->isPlaying())
-	playButton_->setIcon(QPixmap("gfx/stop.png"));
+	playButton_->setIcon(QPixmap(":gfx/stop.png"));
     else
-	playButton_->setIcon(QPixmap("gfx/play.png"));
+	playButton_->setIcon(QPixmap(":gfx/play.png"));
 }
 
 
@@ -513,42 +523,3 @@ void MainWindow::listListDoubleClicked(const QModelIndex &/*item*/)
     DEBUG printf("Playlist clicked...\n");
 }
 
-QString MainWindow::getUsername(void)
-{
-  QFile file("user.cfg");
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-    DEBUG printf("Failed to open user file\n");
-    return NULL;
-  }
-
-  QTextStream in(&file);
-  QString line = in.readLine();
-
-  const QByteArray qba = line.toUtf8();
-  const char *ss = qba.data();
-
-  DEBUG printf("Returning username: %s\n", ss);
-
-  return line;
-}
-
-QString MainWindow::getPassword(void)
-{
-  QFile file("user.cfg");
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-    printf("Failed to open user file\n");
-    return NULL;
-  }
-
-  QString line;
-
-  QTextStream in(&file);
-  while (!in.atEnd()) {
-    line = in.readLine();
-  }
-
-  const QByteArray qba = line.toUtf8();
-  const char *ss = qba.data();
-  DEBUG printf("Returning password: %s\n", ss);
-  return line;
-}

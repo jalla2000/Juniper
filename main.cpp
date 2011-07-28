@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
 {
     printf("Juniper starting!\n");
     QApplication app(argc, argv);
+    QCoreApplication::setOrganizationName("Juniper");
+    QCoreApplication::setApplicationName("Juniper");
     QCleanlooksStyle *style = new QGtkStyle();
     QApplication::setStyle(style);
     app.setWindowIcon(QPixmap("gfx/iconlogo2_32.png"));

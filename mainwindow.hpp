@@ -52,8 +52,6 @@ class MainWindow : public QMainWindow {
  public:
     MainWindow(QWidget *parent = 0);
     SpotWorker *spotWorker; //TODO: make private!
-    static QString getUsername(void);
-    static QString getPassword(void);
 
  private:
 
@@ -78,6 +76,8 @@ class MainWindow : public QMainWindow {
     QLabel *progressTimeLabel_;
     QLabel *totalTimeLabel_;
     QTimer *guiUpdater_;
+
+    QSettings settings;
 
     //models and structure
     QListListView *listListView_;

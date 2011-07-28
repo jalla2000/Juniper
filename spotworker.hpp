@@ -56,8 +56,6 @@ class SpotWorker : public QObject {
     }
     int start(QString username, QString password);
 
-    QString getUsername(void);
-    QString getPassword(void);
     void saveUser(QString user, QString pass);
 
     /*
