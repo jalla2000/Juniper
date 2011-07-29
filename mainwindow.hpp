@@ -24,20 +24,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QPushButton>
-#include <QLineEdit>
-#include <QObject>
-#include <QWidget>
-#include <QTableView>
-#include <QMainWindow>
-#include <QMenu>
-#include <QAction>
-#include <QLabel>
-#include <QListWidget>
-#include <QSplitter>
-#include <QGridLayout>
+#include "ui_juniper.h"
 
-#include <libspotify/api.h>
 #include "spotworker.hpp"
 #include "qlistlistview.hpp"
 #include "qlistlistmodel.hpp"
@@ -45,7 +33,7 @@
 #include "qplaylistmodel.hpp"
 #include "qsearchlistmodel.hpp"
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow, private Ui::Juniper {
 
     Q_OBJECT
 
@@ -56,33 +44,12 @@ class MainWindow : public QMainWindow {
  private:
 
     //GUI stuff
-    QLineEdit *searchBox_;
-    QPushButton *searchButton_;
-    QWidget *buttonPanel_;
-    QGridLayout *buttonsLayout_;
-    QPushButton *playButton_;
-    QPushButton *nextButton_;
-    QPushButton *prevButton_;
-    QPushButton *netButton_;
-    QPushButton *quitButton_;
-    QSplitter *listSplitter_;
-    QMenu *formatMenu_;
-    QMenu *styleMenu_;
-    QMenu *fileMenu_;
-    QMenu *settingsMenu_;
-    QMenu *helpMenu_;
-    QMenu *aboutMenu_;
-    QSlider *seekSlider_;
-    QLabel *progressTimeLabel_;
-    QLabel *totalTimeLabel_;
     QTimer *guiUpdater_;
 
     QSettings settings;
 
     //models and structure
-    QListListView *listListView_;
     QListListModel *listListModel_;
-    QPlayListView *listView_;
 
     QPlayListModel *nowPlayingPlaylist_;
     QSearchListModel *nowPlayingSearch_;
@@ -90,27 +57,14 @@ class MainWindow : public QMainWindow {
     QPlayListModel *playlistModel_;
     QSearchListModel *searchlistModel_;
 
-    QAction *aboutAction_;
-    QAction *exitAction_;
-    bool autoRip_;
     SoundSaver::FileType ripFormat_;
     QActionGroup *formatGroup_;
-    QActionGroup *styleActionGroup_;
-    QAction *selectWavAction_;
-    QAction *selectFlacAction_;
-    QAction *selectOggAction_;
-    QAction *selectMp3Action_;
-    QAction *toggleAutoRipAction_;
 
     //functions
-    void setupGUI();
     void connectSignals();
-    void toggleFormat(SoundSaver::FileType);
-    void saveUser(QString user, QString pass);
-    void checkCurrentStyle(void);
 
- signals:
-    void someSignal();
+ private slots:
+    void toggleRipFormat();
 
  public slots:
     void executeSearch();
@@ -121,13 +75,8 @@ class MainWindow : public QMainWindow {
     void loginFailed(void);
     void about();
     void updateGui();
-    void selectWav();
-    void selectFlac();
-    void selectOgg();
-    void selectMp3();
     void toggleAutoRip(bool);
     void playStop();
-    void changeStyle(bool checked);
     void updatePlaylistList(sp_playlistcontainer *plc);
 
 };

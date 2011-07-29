@@ -21,33 +21,19 @@
  *
  */
 
-#include <stdio.h>
-#include <libspotify/api.h>
-#include <QApplication>
-#include <QPushButton>
-#include <QWidget>
-#include <QObject>
-#include <QString>
-#include <QCleanlooksStyle>
-#include <QGtkStyle>
-
 #include "mainwindow.hpp"
 #include "spotworker.hpp"
 
 int main(int argc, char *argv[])
 {
-    printf("Juniper starting!\n");
+    qDebug() << "Juniper starting...";
     QApplication app(argc, argv);
     QCoreApplication::setOrganizationName("Juniper");
     QCoreApplication::setApplicationName("Juniper");
-    QCleanlooksStyle *style = new QGtkStyle();
-    QApplication::setStyle(style);
     app.setWindowIcon(QPixmap("gfx/iconlogo2_32.png"));
 
-    //    printf("Username found: %s\n", MainWindow::getUsername().toAscii().constData());
     MainWindow mainframe;
 
     return app.exec();
-
 }
 
