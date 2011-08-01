@@ -45,22 +45,22 @@ QVariant QPlayListModel::headerData(int section, Qt::Orientation orientation, in
     //printf("DEBUG: headerdata requested. section was: %d\n", section);
 
     if (role != Qt::DisplayRole)
-	return QVariant();
+        return QVariant();
 
     if(orientation==Qt::Horizontal){
-	switch(section){
-	case 0:
-	    return QVariant("Title");
-	case 1:
-	    return QVariant("Artist");
-	case 2:
-	    return QVariant("Album");
-	default:
-	    return QVariant("Error");
-	}
+        switch(section){
+        case 0:
+            return QVariant("Title");
+        case 1:
+            return QVariant("Artist");
+        case 2:
+            return QVariant("Album");
+        default:
+            return QVariant("Error");
+        }
     }
     else {
-	return section+1;
+        return section+1;
     }
 }
 
@@ -108,46 +108,46 @@ QVariant QPlayListModel::data(const QModelIndex &index, int role) const
 
     if(role==Qt::DisplayRole){
 
-	int row = index.row();
-	int column = index.column();
-	//printf("Requesting DisplayRole data for row %d, col %d\n", row, column);
-	sp_track *track = sp_playlist_track(spPlayList_, row);
-	//if(!track)
-	    //printf("Epic fail. sp_playlist_track returned null-pointer\n");
-	int artistCount = sp_track_num_artists(track);
+        int row = index.row();
+        int column = index.column();
+        //printf("Requesting DisplayRole data for row %d, col %d\n", row, column);
+        sp_track *track = sp_playlist_track(spPlayList_, row);
+        //if(!track)
+            //printf("Epic fail. sp_playlist_track returned null-pointer\n");
+        int artistCount = sp_track_num_artists(track);
 
-	switch(column){
-	case 0: {
-	    const char *trackName = sp_track_name(track);
-	    return QString().fromUtf8(trackName);
-	}
-	case 1: {
-	    if(artistCount<=0){
-		//printf("This track has %d artists\n", artistCount);
-		return QString("");
-	    }
-	    //printf("Attempting to extract artist\n");
-	    sp_artist *tartist = sp_track_artist(track, 0);
-	    //if(!tartist)
-		//printf("Epic fail. sp_track_artist returned null-pointer\n");
-	    const char *artistName = sp_artist_name(tartist);
-	    return QString().fromUtf8(artistName);
-	}
-	case 2: {
-	    sp_album *talbum = sp_track_album(track);
-	    if(!talbum){
-		return QString("");
-	    }
-	    const char *albumName = sp_album_name(talbum);
-	    return QString().fromUtf8(albumName);
-	}
-	default: {
-	    return QString("Error!");
-	}
-	}
+        switch(column){
+        case 0: {
+            const char *trackName = sp_track_name(track);
+            return QString().fromUtf8(trackName);
+        }
+        case 1: {
+            if(artistCount<=0){
+                //printf("This track has %d artists\n", artistCount);
+                return QString("");
+            }
+            //printf("Attempting to extract artist\n");
+            sp_artist *tartist = sp_track_artist(track, 0);
+            //if(!tartist)
+                //printf("Epic fail. sp_track_artist returned null-pointer\n");
+            const char *artistName = sp_artist_name(tartist);
+            return QString().fromUtf8(artistName);
+        }
+        case 2: {
+            sp_album *talbum = sp_track_album(track);
+            if(!talbum){
+                return QString("");
+            }
+            const char *albumName = sp_album_name(talbum);
+            return QString().fromUtf8(albumName);
+        }
+        default: {
+            return QString("Error!");
+        }
+        }
     }
     else{
-	return QVariant();
+        return QVariant();
     }
 
     //int duration = sp_track_duration(track);
@@ -167,8 +167,8 @@ QVariant QPlayListModel::data(const QModelIndex &index, int role) const
     /*
     switch(column){
     case 0:
-	QString cellText(artistName);
-		return cellText;
+        QString cellText(artistName);
+                return cellText;
     }
     */
     return "Error...";

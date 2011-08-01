@@ -83,21 +83,21 @@ static sp_session_callbacks g_callbacks = {
 //The playlist container callbacks
 
 static sp_playlistcontainer_callbacks pc_callbacks = {
-	&playlist_added,
-	&playlist_removed,
-	&playlist_moved,
-	&container_loaded
+        &playlist_added,
+        &playlist_removed,
+        &playlist_moved,
+        &container_loaded
 };
 
 //The callbacks we are interested in for individual playlists.
 /*
-void(* 	tracks_added )(sp_playlist *pl, sp_track *const *tracks, int num_tracks, int position, void *userdata)
-void(* 	tracks_removed )(sp_playlist *pl, const int *tracks, int num_tracks, void *userdata)
-void(* 	tracks_moved )(sp_playlist *pl, const int *tracks, int num_tracks, int new_position, void *userdata)
-void(* 	playlist_renamed )(sp_playlist *pl, void *userdata)
-void(* 	playlist_state_changed )(sp_playlist *pl, void *userdata)
-void(* 	playlist_update_in_progress )(sp_playlist *pl, bool done, void *userdata)
-void(* 	playlist_metadata_updated )(sp_playlist *pl, void *userdata)
+void(*  tracks_added )(sp_playlist *pl, sp_track *const *tracks, int num_tracks, int position, void *userdata)
+void(*  tracks_removed )(sp_playlist *pl, const int *tracks, int num_tracks, void *userdata)
+void(*  tracks_moved )(sp_playlist *pl, const int *tracks, int num_tracks, int new_position, void *userdata)
+void(*  playlist_renamed )(sp_playlist *pl, void *userdata)
+void(*  playlist_state_changed )(sp_playlist *pl, void *userdata)
+void(*  playlist_update_in_progress )(sp_playlist *pl, bool done, void *userdata)
+void(*  playlist_metadata_updated )(sp_playlist *pl, void *userdata)
  */
 static sp_playlist_callbacks pl_callbacks = {
     &tracks_added,
@@ -172,16 +172,16 @@ int SpotWorker::start(QString username, QString password)
     error = sp_session_create(&config, &currentSession);
 
     if (SP_ERROR_OK != error) {
-	fprintf(stderr, "failed to create session: %s\n",
-		sp_error_message(error));
+        fprintf(stderr, "failed to create session: %s\n",
+                sp_error_message(error));
     }
 
     // Login using the credentials given on the command line.
     //printf("Logging in...\n");
     // FIXME, add callback for error checking to adjust to API changes
     sp_session_login(currentSession,
-		     username.toUtf8().data(),
-		     password.toUtf8().data());
+                     username.toUtf8().data(),
+                     password.toUtf8().data());
 
     eventTimer = new QTimer();
     connect(eventTimer, SIGNAL(timeout()), SLOT(processEvents()) );
@@ -189,7 +189,7 @@ int SpotWorker::start(QString username, QString password)
     watchDog_ = new QTimer();
     connect(watchDog_, SIGNAL(timeout()), SLOT(streamingStopped()) );
 
-    // TODO: find out what these two lines do, 
+    // TODO: find out what these two lines do,
     // and why they are commented out
     //loop(session);
     //session_terminated();
@@ -214,18 +214,18 @@ void SpotWorker::performSearch(QString query)
     const int artist_offset = 0;
     const int artist_count = 100;
     g_search = sp_search_create(currentSession,
-				needle,
-				track_offset,
-				track_count,
-				album_offset,
-				album_count,
-				artist_offset,
-				artist_count,
-				search_complete,
-				NULL);
+                                needle,
+                                track_offset,
+                                track_count,
+                                album_offset,
+                                album_count,
+                                artist_offset,
+                                artist_count,
+                                search_complete,
+                                NULL);
 
     if (!g_search) {
-	fprintf(stderr, "Clay Davis says: Sheeeet! Failed to start search!\n");
+        fprintf(stderr, "Clay Davis says: Sheeeet! Failed to start search!\n");
     }
 }
 
@@ -239,11 +239,11 @@ void SpotWorker::loadPlayer(sp_track *track, bool rip, SoundSaver::FileType type
 
     closeFile();
     if(rip){
-	saveFile(track, type);
-	DEBUG printf("Debug: bool received: true\n");
+        saveFile(track, type);
+        DEBUG printf("Debug: bool received: true\n");
     }
     else
-	DEBUG printf("Debug: bool received: false\n");
+        DEBUG printf("Debug: bool received: false\n");
     //printf("Loading the player...4real\n");
     sp_session_player_load(currentSession, track);
 }
@@ -308,13 +308,13 @@ extern "C" void logged_in(sp_session *session, sp_error error)
     sw->emitLoggedInSignal(session, error);
 
     if (SP_ERROR_OK == error) {
-	// Let us print the nice message...
-	sp_user *me = sp_session_user(session);
-	const char *my_name = (sp_user_is_loaded(me) ?
-			       sp_user_display_name(me) :
-			       sp_user_canonical_name(me));
-	DEBUG printf("Logged in to Spotify as user %s\n", my_name);
-	session_ready(session);
+        // Let us print the nice message...
+        sp_user *me = sp_session_user(session);
+        const char *my_name = (sp_user_is_loaded(me) ?
+                               sp_user_display_name(me) :
+                               sp_user_canonical_name(me));
+        DEBUG printf("Logged in to Spotify as user %s\n", my_name);
+        session_ready(session);
     }
 }
 
@@ -322,45 +322,45 @@ extern "C" void logged_in(sp_session *session, sp_error error)
 void SpotWorker::emitLoggedInSignal(sp_session *session, sp_error error)
 {
     if (SP_ERROR_OK != error) {
-	fprintf(stderr, "SpotWorker: Login failed: %s\n",
-		sp_error_message(error));
+        fprintf(stderr, "SpotWorker: Login failed: %s\n",
+                sp_error_message(error));
     }
     else{
 
-	emit loggedIn(session, error);
+        emit loggedIn(session, error);
 
-	sp_playlistcontainer *playlists = sp_session_playlistcontainer(session);
-	void * userdata = NULL;
-	sp_playlistcontainer_add_callbacks(playlists,
-					   &pc_callbacks,
-					   userdata);
+        sp_playlistcontainer *playlists = sp_session_playlistcontainer(session);
+        void * userdata = NULL;
+        sp_playlistcontainer_add_callbacks(playlists,
+                                           &pc_callbacks,
+                                           userdata);
 
-	int i;
-	int listCount = sp_playlistcontainer_num_playlists(playlists);
-	printf("%d playlists discovered\n", sp_playlistcontainer_num_playlists(playlists));
+        int i;
+        int listCount = sp_playlistcontainer_num_playlists(playlists);
+        printf("%d playlists discovered\n", sp_playlistcontainer_num_playlists(playlists));
 
-	if(listCount > 0)
-	    emit playlistAdded(playlists);
+        if(listCount > 0)
+            emit playlistAdded(playlists);
 
-	for (i = 0; i < sp_playlistcontainer_num_playlists(playlists); ++i) {
-	    sp_playlist *pl = sp_playlistcontainer_playlist(playlists, i);
+        for (i = 0; i < sp_playlistcontainer_num_playlists(playlists); ++i) {
+            sp_playlist *pl = sp_playlistcontainer_playlist(playlists, i);
 
-	    //TODO: register callback
-	    //sp_playlist_add_callbacks(pl, &pl_callbacks, NULL);
+            //TODO: register callback
+            //sp_playlist_add_callbacks(pl, &pl_callbacks, NULL);
 
-	    //if (!strcasecmp(sp_playlist_name(pl), g_listname)) {
-	    //    g_jukeboxlist = pl;
-	    //    try_jukebox_start();
-	    //}
-	    DEBUG printf("Playlist found: %s\n", sp_playlist_name(pl));
-	}
+            //if (!strcasecmp(sp_playlist_name(pl), g_listname)) {
+            //    g_jukeboxlist = pl;
+            //    try_jukebox_start();
+            //}
+            DEBUG printf("Playlist found: %s\n", sp_playlist_name(pl));
+        }
 
-	/*
-	  if (!g_jukeboxlist) {
-	  printf("jukebox: No such playlist. Waiting for one to pop up...\n");
-	  fflush(stdout);
-	  }
-	*/
+        /*
+          if (!g_jukeboxlist) {
+          printf("jukebox: No such playlist. Waiting for one to pop up...\n");
+          fflush(stdout);
+          }
+        */
     }
 }
 
@@ -372,9 +372,9 @@ void SpotWorker::emitLoggedInSignal(sp_session *session, sp_error error)
 extern "C" void logged_out(sp_session *session)
 {
     //if (g_exit_code< 0)
-    //	g_exit_code = 0;
+    //  g_exit_code = 0;
     SpotWorker *sw = SpotWorker::getInstance();
-    sw->emitLoggedOutSignal(session);   
+    sw->emitLoggedOutSignal(session);
     DEBUG printf("Logged out of Spotify...\n");
 }
 
@@ -421,7 +421,7 @@ int SpotWorker::emitMusicDeliverySignal(sp_session *session, const sp_audioforma
      */
     //printf("Frames left: %d", totalFrames - frameCounter);
     if(totalFrames_ - frameCounter_ > 100){
-	watchDog_->start(1000);
+        watchDog_->start(1000);
     }
 
     soundSaver_->saveSound(frames, framesEaten);
@@ -447,7 +447,7 @@ void SpotWorker::emitPlayTokenLostSignal(sp_session *session)
  */
 extern "C" void log_message(sp_session * /*session*/, const char *data)
 {
-	fprintf(stderr, "log_message: %s\n", data);
+        fprintf(stderr, "log_message: %s\n", data);
 }
 
 
@@ -510,18 +510,18 @@ extern "C" void search_complete(sp_search *search, void *userdata)
     //dummy to avoid compile warning
     void *jalla = userdata;
     jalla = jalla;
-    
+
     SpotWorker *sw = SpotWorker::getInstance();
 
     //TODO: move these checks to signal receiver
     //TODO: why is *userdata not passed to signal?
     if (search && SP_ERROR_OK == sp_search_error(search)){
-	//sw->print_search(search);
-	sw->emitSearchCompleteSignal(search);
+        //sw->print_search(search);
+        sw->emitSearchCompleteSignal(search);
     }
     else{
-	fprintf(stderr, "Failed to search: %s\n", sp_error_message(sp_search_error(search)));
-	sw->emitSearchCompleteSignal(NULL);
+        fprintf(stderr, "Failed to search: %s\n", sp_error_message(sp_search_error(search)));
+        sw->emitSearchCompleteSignal(NULL);
     }
     //sp_search_release(sw->g_search);
 
@@ -564,13 +564,13 @@ void SpotWorker::emitSessionTerminatedSignal(void)
  * @param  userdata      The opaque pointer
  */
 extern "C" void playlist_added(sp_playlistcontainer *playlists,
-			       sp_playlist *addedPlaylist,
-			       int position,
-			       void * /*userdata*/)
+                               sp_playlist *addedPlaylist,
+                               int position,
+                               void * /*userdata*/)
 {
     DEBUG printf("SpotWorker: playlist_added: (position: %d, name:%s)\n",
-		 position,
-		 sp_playlist_name(addedPlaylist));
+                 position,
+                 sp_playlist_name(addedPlaylist));
     sp_playlist_add_callbacks(addedPlaylist, &pl_callbacks, NULL);
     SpotWorker *sw = SpotWorker::getInstance();
     sw->emitPlaylistAdded(playlists);
@@ -598,26 +598,26 @@ void SpotWorker::emitPlaylistAdded(sp_playlistcontainer *playlists)
  * @param  userdata      The opaque pointer
  */
 extern "C" void playlist_removed(sp_playlistcontainer * /*pc*/,
-				 sp_playlist *pl,
-				 int position,
-				 void * /*userdata*/)
+                                 sp_playlist *pl,
+                                 int position,
+                                 void * /*userdata*/)
 {
     printf("SpotWorker: playlist_removed (name: %s, position:%d)\n",
-	   sp_playlist_name(pl),
-	   position);
+           sp_playlist_name(pl),
+           position);
     sp_playlist_remove_callbacks(pl, &pl_callbacks, NULL);
 }
 
 extern "C" void playlist_moved(sp_playlistcontainer * /*pc*/,
-			       sp_playlist *playlist,
-			       int position,
-			       int new_position,
-			       void * /*userdata*/)
+                               sp_playlist *playlist,
+                               int position,
+                               int new_position,
+                               void * /*userdata*/)
 {
     DEBUG printf("SpotWorker: playlist_moved (name: %s, pos:before/after=(%d/%d))\n",
-		 sp_playlist_name(playlist),
-		 position,
-		 new_position);
+                 sp_playlist_name(playlist),
+                 position,
+                 new_position);
 }
 
 /**
@@ -630,7 +630,7 @@ extern "C" void playlist_moved(sp_playlistcontainer * /*pc*/,
 extern "C" void container_loaded(sp_playlistcontainer *playlists, void * /*userdata*/)
 {
     DEBUG printf("SpotWorker: container_loaded (%d playlists)\n",
-		 sp_playlistcontainer_num_playlists(playlists));
+                 sp_playlistcontainer_num_playlists(playlists));
     SpotWorker *sw = SpotWorker::getInstance();
     sw->emitPlaylistAdded(playlists);
 }
@@ -646,14 +646,14 @@ extern "C" void container_loaded(sp_playlistcontainer *playlists, void * /*userd
  * @param  userdata    The opaque pointer
  */
 extern "C" void tracks_added(sp_playlist * /*pl*/,
-			     sp_track *const * /*tracks*/,
-			     int num_tracks,
-			     int /*position*/,
-			     void * /*userdata*/)
+                             sp_track *const * /*tracks*/,
+                             int num_tracks,
+                             int /*position*/,
+                             void * /*userdata*/)
 {
     /*
-	if (pl != g_jukeboxlist)
-		return;
+        if (pl != g_jukeboxlist)
+                return;
     */
     DEBUG printf("%d tracks were added to a playlist\n", num_tracks);
     fflush(stdout);
@@ -670,7 +670,7 @@ extern "C" void tracks_added(sp_playlist * /*pl*/,
  * @param  userdata    The opaque pointer
  */
 extern "C" void tracks_removed(sp_playlist * /*pl*/, const int * /*tracks*/,
-			       int num_tracks, void * /*userdata*/)
+                               int num_tracks, void * /*userdata*/)
 {
     //int i, k = 0;
 
@@ -698,18 +698,18 @@ extern "C" void tracks_removed(sp_playlist * /*pl*/, const int * /*tracks*/,
  * @param  userdata      The opaque pointer
  */
 extern "C" void tracks_moved(sp_playlist * /*pl*/,
-			     const int * /*tracks*/,
-			     int num_tracks,
-			     int /*new_position*/,
-			     void * /*userdata*/)
+                             const int * /*tracks*/,
+                             int num_tracks,
+                             int /*new_position*/,
+                             void * /*userdata*/)
 {
     //TODO: Use more function parameters
     /*
-	if (pl != g_jukeboxlist)
-		return;
+        if (pl != g_jukeboxlist)
+                return;
     */
-	DEBUG printf("%d tracks were moved around in a playlist\n", num_tracks);
-	fflush(stdout);
+        DEBUG printf("%d tracks were moved around in a playlist\n", num_tracks);
+        fflush(stdout);
 }
 
 /**
@@ -720,13 +720,13 @@ extern "C" void tracks_moved(sp_playlist * /*pl*/,
  */
 extern "C" void playlist_renamed(sp_playlist *pl, void * /*userdata*/)
 {
-	const char *name = sp_playlist_name(pl);
+        const char *name = sp_playlist_name(pl);
 
-	DEBUG printf("Current playlist renamed to \"%s\".\n", name);
-	//SpotWorker *sw = SpotWorker::getInstance();
-	//sw->emitPlaylistAdded(playlists);
+        DEBUG printf("Current playlist renamed to \"%s\".\n", name);
+        //SpotWorker *sw = SpotWorker::getInstance();
+        //sw->emitPlaylistAdded(playlists);
 
-	//sp_session_player_unload(g_sess);
+        //sp_session_player_unload(g_sess);
 }
 
 
@@ -740,14 +740,14 @@ extern "C" void playlist_renamed(sp_playlist *pl, void * /*userdata*/)
 /*
 void SpotWorker::print_track(sp_track *track)
 {
-	int duration = sp_track_duration(track);
+        int duration = sp_track_duration(track);
 
-	printf("  Track \"%s\" [%d:%02d] has %d artist(s), %d%% popularity\n",
-		sp_track_name(track),
-		duration / 60000,
-		(duration / 1000) / 60,
-		sp_track_num_artists(track),
-		sp_track_popularity(track));
+        printf("  Track \"%s\" [%d:%02d] has %d artist(s), %d%% popularity\n",
+                sp_track_name(track),
+                duration / 60000,
+                (duration / 1000) / 60,
+                sp_track_num_artists(track),
+                sp_track_popularity(track));
 }
 */
 
@@ -760,9 +760,9 @@ void SpotWorker::print_track(sp_track *track)
 /*
 void SpotWorker::print_album(sp_album *album)
 {
-	printf("  Album \"%s\" (%d)\n",
-	       sp_album_name(album),
-	       sp_album_year(album));
+        printf("  Album \"%s\" (%d)\n",
+               sp_album_name(album),
+               sp_album_year(album));
 }
 */
 
@@ -774,7 +774,7 @@ void SpotWorker::print_album(sp_album *album)
 /*
 void SpotWorker::print_artist(sp_artist *artist)
 {
-	printf("  Artist \"%s\"\n", sp_artist_name(artist));
+        printf("  Artist \"%s\"\n", sp_artist_name(artist));
 }
 */
 
@@ -786,10 +786,10 @@ void SpotWorker::print_artist(sp_artist *artist)
 void SpotWorker::print_search(sp_search *search)
 {
     DEBUG {
-	printf("Query          : %s\n", sp_search_query(search));
-	printf("Did you mean   : %s\n", sp_search_did_you_mean(search));
-	printf("Tracks in total: %d\n", sp_search_total_tracks(search));
-	puts("");
+        printf("Query          : %s\n", sp_search_query(search));
+        printf("Did you mean   : %s\n", sp_search_did_you_mean(search));
+        printf("Tracks in total: %d\n", sp_search_total_tracks(search));
+        puts("");
     }
     /*
       int i;
@@ -831,9 +831,9 @@ void SpotWorker::saveFile(sp_track *track, SoundSaver::FileType nextFile)
      * so this code is probably triple redundant. Wear seatbelts!
      */
     if(soundSaver_){
-	DEBUG printf("Closing open file...\n");
-	soundSaver_->close();
-	DEBUG printf("Closed!\n");
+        DEBUG printf("Closing open file...\n");
+        soundSaver_->close();
+        DEBUG printf("Closed!\n");
     }
 
     //start a new file
@@ -842,8 +842,8 @@ void SpotWorker::saveFile(sp_track *track, SoundSaver::FileType nextFile)
     const char *artistName = sp_artist_name(tartist);
     const char *trackName = sp_track_name(track);
     QString fileName("./");
-    fileName += QString(QString().fromUtf8(artistName)) + 
-	" - " + QString(QString().fromUtf8(trackName));
+    fileName += QString(QString().fromUtf8(artistName)) +
+        " - " + QString(QString().fromUtf8(trackName));
     DEBUG printf("Making new soundsaver...\n");
     soundSaver_->open(fileName.toUtf8().data(), nextFile);
     DEBUG printf("Soundsaver made. returning...\n");
@@ -853,12 +853,12 @@ void SpotWorker::closeFile()
 {
     //close previous file
     if(soundSaver_){
-	DEBUG printf("Closing open file...");
-	soundSaver_->close();
-	DEBUG printf("Closed!\n");
+        DEBUG printf("Closing open file...");
+        soundSaver_->close();
+        DEBUG printf("Closed!\n");
     }
 }
- 
+
  /*
    void SpotWorker::ResetCounter()
    {
@@ -882,12 +882,12 @@ void SpotWorker::startServer()
     tcpServer_ = new QTcpServer(this);
 
     if (!tcpServer_->listen(QHostAddress::Any, 2718)) {
-	/*	QMessageBox::warning(this, tr("Error"),
-			      tr("Failed to start server: %1.")
-			     .arg(anyWho->errorString()));
-	*/
-	DEBUG printf("SpotWorker::startServer(): Epic error!\n");
-	return;
+        /*      QMessageBox::warning(this, tr("Error"),
+                              tr("Failed to start server: %1.")
+                             .arg(anyWho->errorString()));
+        */
+        DEBUG printf("SpotWorker::startServer(): Epic error!\n");
+        return;
     }
     DEBUG printf("TCP server started!\n");
     connect(tcpServer_, SIGNAL(newConnection()), this, SLOT(netConnection()) );
@@ -900,9 +900,9 @@ void SpotWorker::netConnection()
     serverData_.xfered = 0;
     clientConnection_ = tcpServer_->nextPendingConnection();
     connect(clientConnection_, SIGNAL(disconnected()),
-	    clientConnection_, SLOT(deleteLater()));
+            clientConnection_, SLOT(deleteLater()));
     connect(clientConnection_, SIGNAL(readyRead()),
-	    this, SLOT(rxDataReady()) );
+            this, SLOT(rxDataReady()) );
 }
 
 void SpotWorker::rxDataReady()
@@ -914,60 +914,60 @@ void SpotWorker::rxDataReady()
 
     while (handled < amount){
 
-	if (serverData_.state==0 && amount>=4){
-	    char buf[4];
-	    qint64 received = clientConnection_->read(buf, 4);
-	    handled += received;
-	    for(int i = 0; i < 4; i++)
-		((char *)&serverData_.type)[i] = buf[3-i];
-	    DEBUG printf("Packet received. Type: %d\n", serverData_.type);
-	    serverData_.state = 1;
-	}
+        if (serverData_.state==0 && amount>=4){
+            char buf[4];
+            qint64 received = clientConnection_->read(buf, 4);
+            handled += received;
+            for(int i = 0; i < 4; i++)
+                ((char *)&serverData_.type)[i] = buf[3-i];
+            DEBUG printf("Packet received. Type: %d\n", serverData_.type);
+            serverData_.state = 1;
+        }
 
-	if (serverData_.state==1 && amount>=4){
-	    char buf[4];
-	    qint64 received = clientConnection_->read(buf, 4);
-	    handled += received;
-	    for(int i = 0; i < 4; i++)
-		((char *)&serverData_.length)[i] = buf[3-i];
-	    DEBUG printf("Packet size: %d\n", serverData_.length);
-	    if(serverData_.length > MAX_PACKET_SIZE)
-		DEBUG printf("Length of packet is crazy. Client is a bastard!");
-	    serverData_.state = 2;
-	}
-	if (serverData_.state == 2){
-	    if(serverData_.xfered==serverData_.length){
-		DEBUG printf("Complete packet received\n");
-		parsePacket();
-	    }
-	    else {
-		qint64 received = clientConnection_->read((char *)&serverData_.data, serverData_.length-serverData_.xfered);
-		handled += received;
-		//printf("Packet received. Type: %d\n", serverData.type);
-		serverData_.xfered += received;
-		printf("%lld bytes added to buffer\n", received);
-	    }
-	}
+        if (serverData_.state==1 && amount>=4){
+            char buf[4];
+            qint64 received = clientConnection_->read(buf, 4);
+            handled += received;
+            for(int i = 0; i < 4; i++)
+                ((char *)&serverData_.length)[i] = buf[3-i];
+            DEBUG printf("Packet size: %d\n", serverData_.length);
+            if(serverData_.length > MAX_PACKET_SIZE)
+                DEBUG printf("Length of packet is crazy. Client is a bastard!");
+            serverData_.state = 2;
+        }
+        if (serverData_.state == 2){
+            if(serverData_.xfered==serverData_.length){
+                DEBUG printf("Complete packet received\n");
+                parsePacket();
+            }
+            else {
+                qint64 received = clientConnection_->read((char *)&serverData_.data, serverData_.length-serverData_.xfered);
+                handled += received;
+                //printf("Packet received. Type: %d\n", serverData.type);
+                serverData_.xfered += received;
+                printf("%lld bytes added to buffer\n", received);
+            }
+        }
     }
 }
 
 void SpotWorker::parsePacket()
 {
     DEBUG {
-	printf("packet type: %d\n", serverData_.type);
-	printf("Playstop: %d\n", PLAYSTOP);
-	printf("Nextblock: %d\n", NEXTBLOCK);
+        printf("packet type: %d\n", serverData_.type);
+        printf("Playstop: %d\n", PLAYSTOP);
+        printf("Nextblock: %d\n", NEXTBLOCK);
     }
 
     switch(serverData_.type){
     case PLAYSTOP:
-	playPlayer(!isPlaying());
-	break;
+        playPlayer(!isPlaying());
+        break;
     case NEXTBLOCK:
-	DEBUG printf("TODO: send block of audio data\n");
-	break;
+        DEBUG printf("TODO: send block of audio data\n");
+        break;
     default:
-	DEBUG printf("Package had illegal type. Dropping.\n");
+        DEBUG printf("Package had illegal type. Dropping.\n");
     }
 
     serverData_.state = 0;

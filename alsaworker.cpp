@@ -56,140 +56,140 @@ AlsaWorker::AlsaWorker(QObject *parent)
 snd_pcm_t *AlsaWorker::alsaOpen(char *dev, int rate, int channels)
 {
 
-	snd_pcm_hw_params_t *hwp;
-	snd_pcm_sw_params_t *swp;
-	snd_pcm_t *h;
-	int r;
-	int dir;
-	snd_pcm_uframes_t period_size_min;
-	snd_pcm_uframes_t period_size_max;
-	snd_pcm_uframes_t buffer_size_min;
-	snd_pcm_uframes_t buffer_size_max;
-	snd_pcm_uframes_t period_size;
-	snd_pcm_uframes_t buffer_size;
+        snd_pcm_hw_params_t *hwp;
+        snd_pcm_sw_params_t *swp;
+        snd_pcm_t *h;
+        int r;
+        int dir;
+        snd_pcm_uframes_t period_size_min;
+        snd_pcm_uframes_t period_size_max;
+        snd_pcm_uframes_t buffer_size_min;
+        snd_pcm_uframes_t buffer_size_max;
+        snd_pcm_uframes_t period_size;
+        snd_pcm_uframes_t buffer_size;
 
-	DEBUG printf("Bitrate: %d rate, Channels: %d\n", rate, channels);
+        DEBUG printf("Bitrate: %d rate, Channels: %d\n", rate, channels);
 
-	if ((r = snd_pcm_open(&h, dev, SND_PCM_STREAM_PLAYBACK, 0) < 0))
-		return NULL;
+        if ((r = snd_pcm_open(&h, dev, SND_PCM_STREAM_PLAYBACK, 0) < 0))
+                return NULL;
 
-	hwp = reinterpret_cast<snd_pcm_hw_params_t *>(alloca(snd_pcm_hw_params_sizeof()));
-	memset(hwp, 0, snd_pcm_hw_params_sizeof());
-	snd_pcm_hw_params_any(h, hwp);
+        hwp = reinterpret_cast<snd_pcm_hw_params_t *>(alloca(snd_pcm_hw_params_sizeof()));
+        memset(hwp, 0, snd_pcm_hw_params_sizeof());
+        snd_pcm_hw_params_any(h, hwp);
 
-	snd_pcm_hw_params_set_access(h, hwp, SND_PCM_ACCESS_RW_INTERLEAVED);
-	snd_pcm_hw_params_set_format(h, hwp, SND_PCM_FORMAT_S16_LE);
-	snd_pcm_hw_params_set_rate(h, hwp, rate, 0);
-	snd_pcm_hw_params_set_channels(h, hwp, channels);
+        snd_pcm_hw_params_set_access(h, hwp, SND_PCM_ACCESS_RW_INTERLEAVED);
+        snd_pcm_hw_params_set_format(h, hwp, SND_PCM_FORMAT_S16_LE);
+        snd_pcm_hw_params_set_rate(h, hwp, rate, 0);
+        snd_pcm_hw_params_set_channels(h, hwp, channels);
 
-	/* Configurue period */
+        /* Configurue period */
 
-	dir = 0;
-	snd_pcm_hw_params_get_period_size_min(hwp, &period_size_min, &dir);
-	dir = 0;
-	snd_pcm_hw_params_get_period_size_max(hwp, &period_size_max, &dir);
+        dir = 0;
+        snd_pcm_hw_params_get_period_size_min(hwp, &period_size_min, &dir);
+        dir = 0;
+        snd_pcm_hw_params_get_period_size_max(hwp, &period_size_max, &dir);
 
-	period_size = 1024;
+        period_size = 1024;
 
-	dir = 0;
-	r = snd_pcm_hw_params_set_period_size_near(h, hwp, &period_size, &dir);
+        dir = 0;
+        r = snd_pcm_hw_params_set_period_size_near(h, hwp, &period_size, &dir);
 
-	if (r < 0) {
-		fprintf(stderr, "Audio: Failed to set period size %lu (%s)\n",
-		        period_size, snd_strerror(r));
-		snd_pcm_close(h);
-		return NULL;
-	}
+        if (r < 0) {
+                fprintf(stderr, "Audio: Failed to set period size %lu (%s)\n",
+                        period_size, snd_strerror(r));
+                snd_pcm_close(h);
+                return NULL;
+        }
 
-	dir = 0;
-	r = snd_pcm_hw_params_get_period_size(hwp, &period_size, &dir);
+        dir = 0;
+        r = snd_pcm_hw_params_get_period_size(hwp, &period_size, &dir);
 
-	if (r < 0) {
-		fprintf(stderr, "Audio: Unable to get period size (%s)\n",
-		        snd_strerror(r));
-		snd_pcm_close(h);
-		return NULL;
-	}
+        if (r < 0) {
+                fprintf(stderr, "Audio: Unable to get period size (%s)\n",
+                        snd_strerror(r));
+                snd_pcm_close(h);
+                return NULL;
+        }
 
-	/* Configurue buffer size */
+        /* Configurue buffer size */
 
-	snd_pcm_hw_params_get_buffer_size_min(hwp, &buffer_size_min);
-	snd_pcm_hw_params_get_buffer_size_max(hwp, &buffer_size_max);
-	buffer_size = period_size * 4;
+        snd_pcm_hw_params_get_buffer_size_min(hwp, &buffer_size_min);
+        snd_pcm_hw_params_get_buffer_size_max(hwp, &buffer_size_max);
+        buffer_size = period_size * 4;
 
-	dir = 0;
-	r = snd_pcm_hw_params_set_buffer_size_near(h, hwp, &buffer_size);
+        dir = 0;
+        r = snd_pcm_hw_params_set_buffer_size_near(h, hwp, &buffer_size);
 
-	if (r < 0) {
-		fprintf(stderr, "audio: Unable to set buffer size %lu (%s)\n",
-		        buffer_size, snd_strerror(r));
-		snd_pcm_close(h);
-		return NULL;
-	}
+        if (r < 0) {
+                fprintf(stderr, "audio: Unable to set buffer size %lu (%s)\n",
+                        buffer_size, snd_strerror(r));
+                snd_pcm_close(h);
+                return NULL;
+        }
 
-	r = snd_pcm_hw_params_get_buffer_size(hwp, &buffer_size);
+        r = snd_pcm_hw_params_get_buffer_size(hwp, &buffer_size);
 
-	if (r < 0) {
-		fprintf(stderr, "audio: Unable to get buffer size (%s)\n",
-		        snd_strerror(r));
-		snd_pcm_close(h);
-		return NULL;
-	}
+        if (r < 0) {
+                fprintf(stderr, "audio: Unable to get buffer size (%s)\n",
+                        snd_strerror(r));
+                snd_pcm_close(h);
+                return NULL;
+        }
 
-	/* write the hw params */
-	r = snd_pcm_hw_params(h, hwp);
+        /* write the hw params */
+        r = snd_pcm_hw_params(h, hwp);
 
-	if (r < 0) {
-		fprintf(stderr, "audio: Unable to configure hardware parameters (%s)\n",
-		        snd_strerror(r));
-		snd_pcm_close(h);
-		return NULL;
-	}
+        if (r < 0) {
+                fprintf(stderr, "audio: Unable to configure hardware parameters (%s)\n",
+                        snd_strerror(r));
+                snd_pcm_close(h);
+                return NULL;
+        }
 
-	/*
-	 * Software parameters
-	 */
+        /*
+         * Software parameters
+         */
 
-	swp = reinterpret_cast<snd_pcm_sw_params_t *>(alloca(snd_pcm_sw_params_sizeof()));
-	memset(hwp, 0, snd_pcm_sw_params_sizeof());
-	snd_pcm_sw_params_current(h, swp);
+        swp = reinterpret_cast<snd_pcm_sw_params_t *>(alloca(snd_pcm_sw_params_sizeof()));
+        memset(hwp, 0, snd_pcm_sw_params_sizeof());
+        snd_pcm_sw_params_current(h, swp);
 
-	r = snd_pcm_sw_params_set_avail_min(h, swp, period_size);
+        r = snd_pcm_sw_params_set_avail_min(h, swp, period_size);
 
-	if (r < 0) {
-		fprintf(stderr, "audio: Unable to configure wakeup threshold (%s)\n",
-		        snd_strerror(r));
-		snd_pcm_close(h);
-		return NULL;
-	}
+        if (r < 0) {
+                fprintf(stderr, "audio: Unable to configure wakeup threshold (%s)\n",
+                        snd_strerror(r));
+                snd_pcm_close(h);
+                return NULL;
+        }
 
-	snd_pcm_sw_params_set_start_threshold(h, swp, 0);
+        snd_pcm_sw_params_set_start_threshold(h, swp, 0);
 
-	if (r < 0) {
-		fprintf(stderr, "audio: Unable to configure start threshold (%s)\n",
-		        snd_strerror(r));
-		snd_pcm_close(h);
-		return NULL;
-	}
+        if (r < 0) {
+                fprintf(stderr, "audio: Unable to configure start threshold (%s)\n",
+                        snd_strerror(r));
+                snd_pcm_close(h);
+                return NULL;
+        }
 
-	r = snd_pcm_sw_params(h, swp);
+        r = snd_pcm_sw_params(h, swp);
 
-	if (r < 0) {
-		fprintf(stderr, "audio: Cannot set soft parameters (%s)\n",
-		snd_strerror(r));
-		snd_pcm_close(h);
-		return NULL;
-	}
+        if (r < 0) {
+                fprintf(stderr, "audio: Cannot set soft parameters (%s)\n",
+                snd_strerror(r));
+                snd_pcm_close(h);
+                return NULL;
+        }
 
-	r = snd_pcm_prepare(h);
-	if (r < 0) {
-		fprintf(stderr, "audio: Cannot prepare audio for playback (%s)\n",
-		snd_strerror(r));
-		snd_pcm_close(h);
-		return NULL;
-	}
+        r = snd_pcm_prepare(h);
+        if (r < 0) {
+                fprintf(stderr, "audio: Cannot prepare audio for playback (%s)\n",
+                snd_strerror(r));
+                snd_pcm_close(h);
+                return NULL;
+        }
 
-	return h;
+        return h;
 }
 
 void AlsaWorker::run()
@@ -206,51 +206,51 @@ void AlsaWorker::run()
 
     for (;;) {
 
-	if(paused_){
-	    msleep(100);
-	    this->playing_ = false;
-	}
-	else{
+        if(paused_){
+            msleep(100);
+            this->playing_ = false;
+        }
+        else{
 
-	    af->mutex.lock();
+            af->mutex.lock();
 
-	    while (!(afd = TAILQ_FIRST(&af->q)))
-		af->cond.wait(&af->mutex);
+            while (!(afd = TAILQ_FIRST(&af->q)))
+                af->cond.wait(&af->mutex);
 
-	    TAILQ_REMOVE(&af->q, afd, link);
-	    af->qlen -= afd->nsamples;
+            TAILQ_REMOVE(&af->q, afd, link);
+            af->qlen -= afd->nsamples;
 
-	    af->mutex.unlock();
+            af->mutex.unlock();
 
-	    if (!h || cur_rate != afd->rate || cur_channels != afd->channels) {
-		if (h) snd_pcm_close(h);
+            if (!h || cur_rate != afd->rate || cur_channels != afd->channels) {
+                if (h) snd_pcm_close(h);
 
-		cur_rate = afd->rate;
-		cur_channels = afd->channels;
+                cur_rate = afd->rate;
+                cur_channels = afd->channels;
 
-		h = this->alsaOpen((char *)"default", cur_rate, cur_channels);
+                h = this->alsaOpen((char *)"default", cur_rate, cur_channels);
 
-		if (!h) {
-		    fprintf(stderr, "Failed to open ALSA device (%d channels, %d Hz), dying\n",
-			    cur_channels, cur_rate);
-		    exit(1);
-		}
-	    }
+                if (!h) {
+                    fprintf(stderr, "Failed to open ALSA device (%d channels, %d Hz), dying\n",
+                            cur_channels, cur_rate);
+                    exit(1);
+                }
+            }
 
-	    c = snd_pcm_wait(h, 1000);
+            c = snd_pcm_wait(h, 1000);
 
-	    if (c >= 0)
-		c = snd_pcm_avail_update(h);
+            if (c >= 0)
+                c = snd_pcm_avail_update(h);
 
-	    if (c == -EPIPE)
-		snd_pcm_prepare(h);
+            if (c == -EPIPE)
+                snd_pcm_prepare(h);
 
-	    snd_pcm_writei(h, afd->samples, afd->nsamples);
-	    free(afd);
+            snd_pcm_writei(h, afd->samples, afd->nsamples);
+            free(afd);
 
-	    watchDog->start(1000);
-	    this->playing_ = true;
-	}
+            watchDog->start(1000);
+            this->playing_ = true;
+        }
     }
 }
 
@@ -267,17 +267,17 @@ void AlsaWorker::audioInit()
 
 void AlsaWorker::audioFifoFlush()
 {
-	audio_fifo_data_t *afd;
-	audio_fifo_t *af = &output_audiofifo; //TODO:
-	af->mutex.lock();
+        audio_fifo_data_t *afd;
+        audio_fifo_t *af = &output_audiofifo; //TODO:
+        af->mutex.lock();
 
-	while((afd = TAILQ_FIRST(&af->q))) {
-		TAILQ_REMOVE(&af->q, afd, link);
-		free(afd);
-	}
+        while((afd = TAILQ_FIRST(&af->q))) {
+                TAILQ_REMOVE(&af->q, afd, link);
+                free(afd);
+        }
 
-	af->qlen = 0;
-	af->mutex.unlock();
+        af->qlen = 0;
+        af->mutex.unlock();
 }
 
 void AlsaWorker::pause(bool p)
@@ -290,20 +290,20 @@ void AlsaWorker::pause(bool p)
 }
 
 int AlsaWorker::musicDelivery(sp_session * /*session*/,
-			       const sp_audioformat *format,
-			       const void *frames,
-			       int num_frames)
+                               const sp_audioformat *format,
+                               const void *frames,
+                               int num_frames)
 {
     audio_fifo_t *af = &output_audiofifo;
     audio_fifo_data_t *afd;
     size_t s;
 
     if (num_frames == 0) {
-	notifyMutex->lock();
-	g_playback_done = 1;
-	af->cond.wakeAll();
-	notifyMutex->unlock();
-	return 0;
+        notifyMutex->lock();
+        g_playback_done = 1;
+        af->cond.wakeAll();
+        notifyMutex->unlock();
+        return 0;
     }
 
     af->mutex.lock();
@@ -311,8 +311,8 @@ int AlsaWorker::musicDelivery(sp_session * /*session*/,
     // buffer some amount of audio data
     if (af->qlen > format->sample_rate*100) {
 
-	af->mutex.unlock();
-	return 0;
+        af->mutex.unlock();
+        return 0;
     }
 
     s = num_frames * sizeof(int16_t) * format->channels;

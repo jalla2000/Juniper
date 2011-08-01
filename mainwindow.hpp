@@ -83,9 +83,9 @@ class MainWindow : public QMainWindow, private Ui::Juniper {
 
 
 class QMainWidget : public QWidget {
-    
+
     Q_OBJECT
-	
+
 };
 
 #endif

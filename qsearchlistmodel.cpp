@@ -43,23 +43,23 @@ QVariant QSearchListModel::headerData(int section, Qt::Orientation orientation, 
 {
 
     if (role != Qt::DisplayRole)
-	return QVariant();
+        return QVariant();
 
     if(orientation==Qt::Horizontal){
-	//printf("DEBUG: headerdata requested. section was: %d\n", section);
-	switch(section){
-	case 0:
-	    return QVariant("Title");
-	case 1:
-	    return QVariant("Artist");
-	case 2:
-	    return QVariant("Album");
-	default:
-	    return QVariant("Error");
-	}
+        //printf("DEBUG: headerdata requested. section was: %d\n", section);
+        switch(section){
+        case 0:
+            return QVariant("Title");
+        case 1:
+            return QVariant("Artist");
+        case 2:
+            return QVariant("Album");
+        default:
+            return QVariant("Error");
+        }
     }
     else {
-	return section+1;
+        return section+1;
     }
 }
 
@@ -99,33 +99,33 @@ QVariant QSearchListModel::data(const QModelIndex &index, int role) const
 
     if(role==Qt::DisplayRole){
 
-	int row = index.row();
-	int column = index.column();
-	//printf("requesting row %d\n", row);
-	sp_track *track = sp_search_track(this->searchList_, row);
+        int row = index.row();
+        int column = index.column();
+        //printf("requesting row %d\n", row);
+        sp_track *track = sp_search_track(this->searchList_, row);
 
-	switch(column){
-	case 0: {
-	    const char *trackName = sp_track_name(track);
-	    return QString().fromUtf8(trackName);
-	}
-	case 1: {
-	    sp_artist *tartist = sp_track_artist(track, 0);
-	    const char *artistName = sp_artist_name(tartist);
-	    return QString().fromUtf8(artistName);
-	}
-	case 2: {
-	    sp_album *talbum = sp_track_album(track);
-	    const char *albumName = sp_album_name(talbum);
-	    return QString().fromUtf8(albumName);
-	}
-	default: {
-	    return QString("Error!");
-	}
-	}
+        switch(column){
+        case 0: {
+            const char *trackName = sp_track_name(track);
+            return QString().fromUtf8(trackName);
+        }
+        case 1: {
+            sp_artist *tartist = sp_track_artist(track, 0);
+            const char *artistName = sp_artist_name(tartist);
+            return QString().fromUtf8(artistName);
+        }
+        case 2: {
+            sp_album *talbum = sp_track_album(track);
+            const char *albumName = sp_album_name(talbum);
+            return QString().fromUtf8(albumName);
+        }
+        default: {
+            return QString("Error!");
+        }
+        }
     }
     else{
-	return QVariant();
+        return QVariant();
     }
 
     //int duration = sp_track_duration(track);
@@ -145,8 +145,8 @@ QVariant QSearchListModel::data(const QModelIndex &index, int role) const
     /*
     switch(column){
     case 0:
-	QString cellText(artistName);
-		return cellText;
+        QString cellText(artistName);
+                return cellText;
     }
     */
     return "Error...";

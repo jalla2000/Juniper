@@ -88,27 +88,27 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::connectSignals()
 {
     connect(guiUpdater_, SIGNAL(timeout()),
-	    this, SLOT(updateGui()) );
+            this, SLOT(updateGui()) );
 
     connect(spotWorker, SIGNAL(playlistAdded(sp_playlistcontainer*)),
-	    this, SLOT(updatePlaylistList(sp_playlistcontainer*)) );
+            this, SLOT(updatePlaylistList(sp_playlistcontainer*)) );
 
-    //connect(seekSlider, SIGNAL(sliderMoved(int)), 
+    //connect(seekSlider, SIGNAL(sliderMoved(int)),
     //        spotWorker, SLOT(seekPlayer(int)));
     connect(netButton, SIGNAL(clicked()), spotWorker, SLOT(startServer()));
 
     connect(listListView, SIGNAL(clicked(const QModelIndex)),
-	    this, SLOT(listListClicked(const QModelIndex)) );
+            this, SLOT(listListClicked(const QModelIndex)) );
     connect(listListView, SIGNAL(doubleClicked(const QModelIndex)),
-	    this, SLOT(listListDoubleClicked(const QModelIndex)) );
+            this, SLOT(listListDoubleClicked(const QModelIndex)) );
 
-    connect(spotWorker, SIGNAL(searchComplete(sp_search*)), 
-	    this, SLOT(searchComplete(sp_search*)) );
+    connect(spotWorker, SIGNAL(searchComplete(sp_search*)),
+            this, SLOT(searchComplete(sp_search*)) );
     connect(spotWorker, SIGNAL(loggedOut(sp_session*)),
-	    this, SLOT(loginFailed()) );
+            this, SLOT(loginFailed()) );
 
     connect(listView, SIGNAL(doubleClicked(const QModelIndex)),
-	    this, SLOT(songDoubleClicked(const QModelIndex)) );
+            this, SLOT(songDoubleClicked(const QModelIndex)) );
 }
 
 void MainWindow::executeSearch()
@@ -151,24 +151,25 @@ void MainWindow::searchComplete(sp_search *search)
 
     for (i = 0; i < sp_search_num_tracks(search) && i < 40; ++i){
 
-	sp_track *track = sp_search_track(search, i);
-	int duration = sp_track_duration(track);
-	//sp_album *talbum = sp_track_album(track);
-	//const char *albumTitle = sp_album_name(talbum);
-	//int artistCount = sp_track_num_artists(track);
-	//sp_artist *tartist = sp_track_artist(track, 0);
-	//const char *artistName = sp_artist_name(tartist);
+        sp_track *track = sp_search_track(search, i);
+        int duration = sp_track_duration(track);
+        //sp_album *talbum = sp_track_album(track);
+        //const char *albumTitle = sp_album_name(talbum);
+        //int artistCount = sp_track_num_artists(track);
+        //sp_artist *tartist = sp_track_artist(track, 0);
+        //const char *artistName = sp_artist_name(tartist);
 
+        // FIXME, unicode breaks
         qDebug() << "  Track" << sp_track_name(track) << "["
-                 << duration / 60000 <<":"<< (duration / 1000) / 60 
+                 << duration / 60000 <<":"<< (duration / 1000) / 60
                  << "] has " << sp_track_num_artists(track) << " artist(s), "
                  << sp_track_popularity(track) << "% popularity";
-	DEBUG printf("  Track \"%s\" [%d:%02d] has %d artist(s), %d%% popularity\n",
-	       sp_track_name(track),
-	       duration / 60000,
-	       (duration / 1000) / 60,
-	       sp_track_num_artists(track),
-	       sp_track_popularity(track));
+        DEBUG printf("  Track \"%s\" [%d:%02d] has %d artist(s), %d%% popularity\n",
+               sp_track_name(track),
+               duration / 60000,
+               (duration / 1000) / 60,
+               sp_track_num_artists(track),
+               sp_track_popularity(track));
     }
 
     qDebug() << "mainwindow.cpp: Adding search to listlistmodel";
@@ -195,16 +196,16 @@ void MainWindow::about()
 {
     //infoLabel->setText(tr("Invoked <b>Help|About</b>"));
     QMessageBox::about(this, tr("About Juniper"),
-		       tr("<b>Juniper</b> is the most epic spotify client ever "
-			  "<br>Creds to my peeps"));
+                       tr("<b>Juniper</b> is the most epic spotify client ever "
+                          "<br>Creds to my peeps"));
 }
 
 void MainWindow::loginFailed()
 {
     //infoLabel->setText(tr("Invoked <b>Help|About</b>"));
     QMessageBox::about(this, tr("Error!"),
-		       tr("<b>Juniper</b> failed to connect to Spotify<br>"
-			  "Correct username/password?"));
+                       tr("<b>Juniper</b> failed to connect to Spotify<br>"
+                          "Correct username/password?"));
 }
 
 void MainWindow::updateGui()
@@ -213,32 +214,32 @@ void MainWindow::updateGui()
     int total = spotWorker->getSongLength();
 
     if(total>0){
-	int sliderValue = progress*1000/total;
+        int sliderValue = progress*1000/total;
 
-	//Construct progress string
-	QString progressText = QString().setNum( (progress/1000)%60 );
-	if(progressText.length()<2)
-	    progressText.prepend("0");
-	progressText.prepend(QString().setNum( (progress/1000)/60 ) + ":");
+        //Construct progress string
+        QString progressText = QString().setNum( (progress/1000)%60 );
+        if(progressText.length()<2)
+            progressText.prepend("0");
+        progressText.prepend(QString().setNum( (progress/1000)/60 ) + ":");
 
-	//Construct totalTime string
-	QString totalText = QString().setNum( (total/1000)%60 );
-	if(totalText.length()<2)
-	    totalText.prepend("0");
-	totalText.prepend(QString().setNum( (total/1000)/60 ) + ":");
+        //Construct totalTime string
+        QString totalText = QString().setNum( (total/1000)%60 );
+        if(totalText.length()<2)
+            totalText.prepend("0");
+        totalText.prepend(QString().setNum( (total/1000)/60 ) + ":");
 
-	progressTimeLabel->setText(progressText);
-	totalTimeLabel->setText(totalText);
-	seekSlider->setValue(sliderValue);
+        progressTimeLabel->setText(progressText);
+        totalTimeLabel->setText(totalText);
+        seekSlider->setValue(sliderValue);
     }
     else {
-	seekSlider->setValue(0);
+        seekSlider->setValue(0);
     }
 
     if(spotWorker->isPlaying())
-	playButton->setIcon(QPixmap(":gfx/stop.png"));
+        playButton->setIcon(QPixmap(":gfx/stop.png"));
     else
-	playButton->setIcon(QPixmap(":gfx/play.png"));
+        playButton->setIcon(QPixmap(":gfx/play.png"));
 }
 
 
@@ -252,10 +253,10 @@ void MainWindow::updatePlaylistList(sp_playlistcontainer *plc)
     }
     */
     if(!listListModel_)
-	listListModel_ = new QListListModel(plc);
+        listListModel_ = new QListListModel(plc);
     listListView->setModel(listListModel_);
     listListView->update();
-    qDebug() << "MainWindow::updatePlaylistList: list model size: " 
+    qDebug() << "MainWindow::updatePlaylistList: list model size: "
              << listListModel_->playListCount();
 }
 
@@ -269,7 +270,7 @@ void MainWindow::toggleRipFormat()
         format = SoundSaver::FLAC;
     else if (selectOggAction->isChecked())
         format = SoundSaver::OGG;
-    else 
+    else
         format = SoundSaver::MP3;
 
     ripFormat_ = format;
@@ -288,20 +289,20 @@ void MainWindow::listListClicked(const QModelIndex &index)
     qDebug() << "List in playlistlist clicked, index: " << index.row();
     if(listListModel_->isSearchList(index)){
         qDebug() << "Searchlist clicked...";
-	searchlistModel_ = new QSearchListModel(listListModel_->getSearchList(index), listView);
-	qDebug() << "Setting model";
-	listView->setModel(playlistModel_);
-	qDebug() << "Model set";
+        searchlistModel_ = new QSearchListModel(listListModel_->getSearchList(index), listView);
+        qDebug() << "Setting model";
+        listView->setModel(playlistModel_);
+        qDebug() << "Model set";
     }
     else{
         qDebug() << "Playlist clicked...";
-	playlistModel_ = new QPlayListModel(listListModel_->getPlayList(index), listView);
-	qDebug() << "Setting model";
-	listView->setModel(playlistModel_);
-	qDebug() << "Model set";
+        playlistModel_ = new QPlayListModel(listListModel_->getPlayList(index), listView);
+        qDebug() << "Setting model";
+        listView->setModel(playlistModel_);
+        qDebug() << "Model set";
     }
     //connect(listView, SIGNAL(doubleClicked(const QModelIndex)),
-    //	this, SLOT(songDoubleClicked(const QModelIndex)) );
+    //  this, SLOT(songDoubleClicked(const QModelIndex)) );
 }
 
 void MainWindow::listListDoubleClicked(const QModelIndex &/*item*/)
@@ -309,4 +310,3 @@ void MainWindow::listListDoubleClicked(const QModelIndex &/*item*/)
     //TODO: pål
     qDebug() << "Playlist doubleclicked...";
 }
-

@@ -32,7 +32,7 @@
 class QListListModel : public QAbstractItemModel
 {
     Q_OBJECT
-	
+
  public:
     QListListModel(sp_playlistcontainer *plc, QObject *parent = 0);
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
@@ -44,13 +44,13 @@ class QListListModel : public QAbstractItemModel
     sp_playlist *getPlayList(const QModelIndex &index);
     sp_search *getSearchList(const QModelIndex &index);
     sp_track *getTrack(const QModelIndex &index);
-    //QVariant headerData(int section, Qt::Orientation orient, int role) const;    
+    //QVariant headerData(int section, Qt::Orientation orient, int role) const;
     bool isSearchList(const QModelIndex &index);
     void addSearch(sp_search *search);
     int playListCount(void);
 
  private:
-    int selectedIndex;	//bad idea?
+    int selectedIndex;  //bad idea?
     QList<sp_search*> *searchLists;
     sp_playlistcontainer *playLists;
 };

@@ -81,8 +81,8 @@ class SpotWorker : public QObject {
     //TODO: message to user signal
     //TODO: notify main thread? (probably no need)
     int emitMusicDeliverySignal(sp_session *session,
-				const sp_audioformat *format,
-				const void *frames, int num_frames);
+                                const sp_audioformat *format,
+                                const void *frames, int num_frames);
     void emitPlayTokenLostSignal(sp_session *session);
     //TODO: log_message signal
 
@@ -102,7 +102,6 @@ class SpotWorker : public QObject {
     //removal experimental
     void loadPlayer(sp_track *track, bool rip, SoundSaver::FileType type);
     void playPlayer(bool play);
-    void seekPlayer(int offset);
     void resetCounter();
 
     void saveFile(sp_track *track, SoundSaver::FileType nextFile);
@@ -128,11 +127,11 @@ class SpotWorker : public QObject {
     QTcpServer *tcpServer_;
     QTcpSocket *clientConnection_;
     typedef struct spacket {
-	uint32_t state;
-	uint32_t type;
-	uint32_t length;
-	uint32_t xfered;
-	uint8_t data[MAX_PACKET_SIZE];
+        uint32_t state;
+        uint32_t type;
+        uint32_t length;
+        uint32_t xfered;
+        uint8_t data[MAX_PACKET_SIZE];
     } spotPacket;
     spotPacket serverData_;
     QMutex *controlMutex_;
@@ -147,6 +146,7 @@ class SpotWorker : public QObject {
     void startServer();
     void netConnection();
     void rxDataReady();
+    void seekPlayer(int offset);
 
  signals:
     void loggedIn(sp_session *session, sp_error error);
@@ -172,36 +172,36 @@ extern "C" void search_complete(sp_search *search, void *userdata);
 
 //playlist callbacks
 extern "C" void playlist_added(sp_playlistcontainer *pc,
-			       sp_playlist *pl,
-			       int position,
-			       void *userdata);
+                               sp_playlist *pl,
+                               int position,
+                               void *userdata);
 extern "C" void playlist_removed(sp_playlistcontainer *pc,
-				 sp_playlist *pl,
-				 int position,
-				 void *userdata);
+                                 sp_playlist *pl,
+                                 int position,
+                                 void *userdata);
 extern "C" void playlist_moved(sp_playlistcontainer *pc,
-			       sp_playlist *playlist,
-			       int position,
-			       int new_position,
-			       void *userdata);
+                               sp_playlist *playlist,
+                               int position,
+                               int new_position,
+                               void *userdata);
 extern "C" void container_loaded(sp_playlistcontainer *pc,
-				 void *userdata);
+                                 void *userdata);
 extern "C" void tracks_added(sp_playlist *pl,
-			     sp_track *const *tracks,
-			     int num_tracks,
-			     int position,
-			     void *userdata);
+                             sp_track *const *tracks,
+                             int num_tracks,
+                             int position,
+                             void *userdata);
 extern "C" void tracks_removed(sp_playlist *pl,
-			       const int *tracks,
-			       int num_tracks,
-			       void *userdata);
+                               const int *tracks,
+                               int num_tracks,
+                               void *userdata);
 extern "C" void tracks_moved(sp_playlist *pl,
-			     const int *tracks,
-			     int num_tracks,
-			     int new_position,
-			     void *userdata);
+                             const int *tracks,
+                             int num_tracks,
+                             int new_position,
+                             void *userdata);
 extern "C" void playlist_renamed(sp_playlist *pl,
-				 void *userdata);
+                                 void *userdata);
 
 
 #endif

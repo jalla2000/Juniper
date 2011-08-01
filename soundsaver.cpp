@@ -44,9 +44,9 @@ void SoundSaver::open(const char *path, FileType type)
 {
     writeMutex_->lock();
     if(writing_){
-	writeMutex_->unlock();
-	close();
-	writeMutex_->lock();
+        writeMutex_->unlock();
+        close();
+        writeMutex_->lock();
     }
 
     fileName_ = new QString(QString().fromUtf8(path));
@@ -54,35 +54,35 @@ void SoundSaver::open(const char *path, FileType type)
 
     switch(type){
     case OGG:
-	wformat_.format = SF_FORMAT_OGG | SF_FORMAT_VORBIS; //SF_FORMAT_PCM_16;
-	fileExtension_ = new QString(".ogg");
-	break;
+        wformat_.format = SF_FORMAT_OGG | SF_FORMAT_VORBIS; //SF_FORMAT_PCM_16;
+        fileExtension_ = new QString(".ogg");
+        break;
     case FLAC:
-	wformat_.format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
-	fileExtension_ = new QString(".fla");
-	break;
+        wformat_.format = SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
+        fileExtension_ = new QString(".fla");
+        break;
     case WAV:
-	wformat_.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-	fileExtension_ = new QString(".wav");
-	break;
+        wformat_.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+        fileExtension_ = new QString(".wav");
+        break;
     case MP3:
-	wformat_.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-	fileExtension_ = new QString(".wav");
-	break;
+        wformat_.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+        fileExtension_ = new QString(".wav");
+        break;
     default:
-	printf("Unknown file format. Defaulting to WAV.\n");
-	wformat_.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-	fileExtension_ = new QString(".wav");
-	break;
+        printf("Unknown file format. Defaulting to WAV.\n");
+        wformat_.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+        fileExtension_ = new QString(".wav");
+        break;
     }
 
     printf("Opening new file: %s%s\n",
-	   fileName_->toUtf8().data(),
-	   fileExtension_->toUtf8().data());
+           fileName_->toUtf8().data(),
+           fileExtension_->toUtf8().data());
 
     fileHandle_ = sf_open(getCurrentFileName().toUtf8().data(), SFM_WRITE, &wformat_);
     if(!fileHandle_)
-	printf("Failed to open output file %s\n", path);
+        printf("Failed to open output file %s\n", path);
 
     writing_ = true;
     writeMutex_->unlock();
@@ -95,15 +95,15 @@ void SoundSaver::saveSound(const void *frames, int count)
     writeMutex_->lock();
 
     if(writing_){
-	const int16_t *samples = reinterpret_cast<const int16_t *>(frames);
-	int written = sf_writef_short(fileHandle_, samples, count);
-	if(written!=count && !errorReported){
-	    printf("Error! trouble!\n");
-	    errorReported = true;
-	}
-	else {
-	    errorReported = false;
-	}
+        const int16_t *samples = reinterpret_cast<const int16_t *>(frames);
+        int written = sf_writef_short(fileHandle_, samples, count);
+        if(written!=count && !errorReported){
+            printf("Error! trouble!\n");
+            errorReported = true;
+        }
+        else {
+            errorReported = false;
+        }
     }
 
     writeMutex_->unlock();
@@ -113,28 +113,28 @@ void SoundSaver::close()
 {
     writeMutex_->lock();
     if(writing_){
-	//printf("Syncing and cloing file\n");
-	sf_write_sync(fileHandle_);
-	sf_close(fileHandle_);
-	//	QByteArray qba = this->currentFileName.toUtf8()
-	printf("Closed file: %s\n", fileName_->toUtf8().data());
-	if(fileType_==MP3){
-	    printf("Converting to MP3\n");
-	    QString lameCommand("");
-	    lameCommand += QString("(lame -b 192 -h -V 4 \"") + 
-		QString(fileName_->toUtf8()) +
-		QString(fileExtension_->toUtf8()) +
-		QString("\" \"") +
-		QString(fileName_->toUtf8()) +
-		QString(".mp3") +
-		QString("\") &");
-	    printf("Lamecommand: %s\n", lameCommand.toUtf8().data());
-	    // TODO: it is not recommended to discard the return value of system().
-	    // it should always be evaluated, or there will be no cake 
-	    // (https://wiki.ubuntu.com/CompilerFlags)
-	    if(system(lameCommand.toUtf8().data())){};
-	}
-	writing_ = false;
+        //printf("Syncing and cloing file\n");
+        sf_write_sync(fileHandle_);
+        sf_close(fileHandle_);
+        //      QByteArray qba = this->currentFileName.toUtf8()
+        printf("Closed file: %s\n", fileName_->toUtf8().data());
+        if(fileType_==MP3){
+            printf("Converting to MP3\n");
+            QString lameCommand("");
+            lameCommand += QString("(lame -b 192 -h -V 4 \"") +
+                QString(fileName_->toUtf8()) +
+                QString(fileExtension_->toUtf8()) +
+                QString("\" \"") +
+                QString(fileName_->toUtf8()) +
+                QString(".mp3") +
+                QString("\") &");
+            printf("Lamecommand: %s\n", lameCommand.toUtf8().data());
+            // TODO: it is not recommended to discard the return value of system().
+            // it should always be evaluated, or there will be no cake
+            // (https://wiki.ubuntu.com/CompilerFlags)
+            if(system(lameCommand.toUtf8().data())){};
+        }
+        writing_ = false;
     }
     writeMutex_->unlock();
 }

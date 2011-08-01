@@ -32,14 +32,14 @@
 class QPlayListView : public QTableView
 {
     Q_OBJECT
-	
+
  public:
     QPlayListView(QWidget *parent = 0);
  private:
     QAction *cutAct;
     QAction *copyAct;
     QAction *pasteAct;
-    
+
  protected:
     void contextMenuEvent(QContextMenuEvent *event);
 
