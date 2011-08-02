@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+ <author>Bernd Wachter</author>
  <class>Juniper</class>
  <widget class="QMainWindow" name="Juniper">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>638</width>
+    <width>677</width>
     <height>493</height>
    </rect>
   </property>
@@ -15,6 +16,12 @@
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>300</width>
+    <height>200</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Juniper</string>
@@ -65,8 +72,32 @@
        <property name="horizontalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DropOnly</enum>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>64</width>
+         <height>64</height>
+        </size>
+       </property>
+       <property name="movement">
+        <enum>QListView::Static</enum>
+       </property>
+       <property name="resizeMode">
+        <enum>QListView::Adjust</enum>
+       </property>
+       <property name="viewMode">
+        <enum>QListView::IconMode</enum>
+       </property>
+       <property name="uniformItemSizes">
+        <bool>true</bool>
+       </property>
       </widget>
-      <widget class="QTableView" name="listView">
+      <widget class="QTableView" name="trackList">
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragOnly</enum>
+       </property>
        <property name="alternatingRowColors">
         <bool>true</bool>
        </property>
@@ -167,7 +198,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>638</width>
+     <width>677</width>
      <height>30</height>
     </rect>
    </property>
@@ -403,22 +434,6 @@
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>318</x>
-     <y>246</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>searchBox</sender>
-   <signal>currentIndexChanged(QString)</signal>
-   <receiver>Juniper</receiver>
-   <slot>executeSearch()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>162</x>
-     <y>57</y>
     </hint>
     <hint type="destinationlabel">
      <x>318</x>

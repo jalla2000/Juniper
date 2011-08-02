@@ -21,30 +21,34 @@
  *
  */
 
-#ifndef QPLAYLISTMODEL_H
-#define QPLAYLISTMODEL_H
+#ifndef TRACKLISTMODEL_H
+#define TRACKLISTMODEL_H
 
 #include <QObject>
 #include <QAbstractTableModel>
 #include <libspotify/api.h>
 
-class QPlayListModel : public QAbstractTableModel
+class TrackListModel : public QAbstractTableModel
 {
     Q_OBJECT
 
  public:
-    QPlayListModel(sp_playlist *pl, QObject *parent = 0);
+    TrackListModel(QObject *parent = 0);
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     int rowCount(const QModelIndex &index) const;
-    int getTrackCount();
     int columnCount(const QModelIndex &index) const;
     QVariant data(const QModelIndex &index, int role) const;
-    bool insertRows(int row, sp_track *track);
+    //bool insertRows(int row, sp_track *track);
     sp_track *getTrack(const QModelIndex &index);
     QVariant headerData(int section, Qt::Orientation orient, int role) const;
 
+  public slots:
+    void setSearch(sp_search *search);
+    void setPlaylist(sp_playlist *pl);
+
  private:
-    sp_playlist *spPlayList_;
+    sp_search *searchList;
+    sp_playlist *playList;
     int columns_;
     int currentTrack_;
 };

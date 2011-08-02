@@ -28,8 +28,7 @@
 
 #include "spotworker.hpp"
 #include "qlistlistmodel.hpp"
-#include "qplaylistmodel.hpp"
-#include "qsearchlistmodel.hpp"
+#include "tracklistmodel.h"
 #include "settingsdialog.h"
 
 class MainWindow : public QMainWindow, private Ui::Juniper {
@@ -41,25 +40,17 @@ class MainWindow : public QMainWindow, private Ui::Juniper {
     SpotWorker *spotWorker; //TODO: make private!
 
  private:
-
-    //GUI stuff
     QTimer *guiUpdater_;
 
     QSettings settings;
+    SettingsDialog *settingsDialog;
 
     //models and structure
     QListListModel *listListModel_;
-
-    QPlayListModel *nowPlayingPlaylist_;
-    QSearchListModel *nowPlayingSearch_;
-
-    QPlayListModel *playlistModel_;
-    QSearchListModel *searchlistModel_;
+    TrackListModel *trackListModel;
 
     SoundSaver::FileType ripFormat_;
     QActionGroup *formatGroup_;
-
-    SettingsDialog *settingsDialog;
 
     //functions
     void connectSignals();
@@ -68,29 +59,19 @@ class MainWindow : public QMainWindow, private Ui::Juniper {
     void toggleRipFormat();
 
  public slots:
-    void executeSearch();
-    void searchComplete(sp_search *search);
     void songDoubleClicked(const QModelIndex &index);
     void listListClicked(const QModelIndex &index);
-    void listListDoubleClicked(const QModelIndex &index);
     void loginFailed(void);
     void loggedIn();
     void about();
     void updateGui();
     void toggleAutoRip(bool);
     void playStop();
-    void updatePlaylistList(sp_playlistcontainer *plc);
     void showSettings();
 
  protected:
     void contextMenuEvent(QContextMenuEvent *event);
-
-};
-
-
-class QMainWidget : public QWidget {
-
-    Q_OBJECT
+    void closeEvent(QCloseEvent *event);
 
 };
 
