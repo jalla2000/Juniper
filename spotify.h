@@ -220,9 +220,9 @@ static sp_session_callbacks g_callbacks = {
     NULL,
     &stop_playback,
     NULL,
+    NULL,
+    NULL
 };
-
-//The playlist container callbacks
 
 static sp_playlistcontainer_callbacks pc_callbacks = {
         &playlist_added,
@@ -231,7 +231,6 @@ static sp_playlistcontainer_callbacks pc_callbacks = {
         &container_loaded
 };
 
-
 static sp_playlist_callbacks pl_callbacks = {
     &tracks_added,
     &tracks_removed,
@@ -239,7 +238,13 @@ static sp_playlist_callbacks pl_callbacks = {
     &playlist_renamed,
     NULL,
     NULL,
-    NULL
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 };
 
 
