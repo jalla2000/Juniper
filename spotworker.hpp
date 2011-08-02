@@ -1,4 +1,6 @@
-/*
+/**
+ * @file spotworker.hpp
+ *
  * (C) Copyright 2009 Pål Driveklepp
  *
  * Written by: Pål Driveklepp <jalla2000@gmail.com>
@@ -110,6 +112,7 @@ class SpotWorker : public QObject {
     int getSongLength();
     bool isPlaying();
     bool isStreaming();
+    void endOfTrack();
 
  private:
 
@@ -135,6 +138,7 @@ class SpotWorker : public QObject {
     } spotPacket;
     spotPacket serverData_;
     QMutex *controlMutex_;
+    QSettings settings;
 
     /* functions */
     void parsePacket();
@@ -165,43 +169,5 @@ class SpotWorker : public QObject {
     void sessionReady(sp_session *session);
     void sessionTerminated(void);
 };
-
-extern "C" int music_delivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames);
-extern "C" void play_token_lost(sp_session *session);
-extern "C" void search_complete(sp_search *search, void *userdata);
-
-//playlist callbacks
-extern "C" void playlist_added(sp_playlistcontainer *pc,
-                               sp_playlist *pl,
-                               int position,
-                               void *userdata);
-extern "C" void playlist_removed(sp_playlistcontainer *pc,
-                                 sp_playlist *pl,
-                                 int position,
-                                 void *userdata);
-extern "C" void playlist_moved(sp_playlistcontainer *pc,
-                               sp_playlist *playlist,
-                               int position,
-                               int new_position,
-                               void *userdata);
-extern "C" void container_loaded(sp_playlistcontainer *pc,
-                                 void *userdata);
-extern "C" void tracks_added(sp_playlist *pl,
-                             sp_track *const *tracks,
-                             int num_tracks,
-                             int position,
-                             void *userdata);
-extern "C" void tracks_removed(sp_playlist *pl,
-                               const int *tracks,
-                               int num_tracks,
-                               void *userdata);
-extern "C" void tracks_moved(sp_playlist *pl,
-                             const int *tracks,
-                             int num_tracks,
-                             int new_position,
-                             void *userdata);
-extern "C" void playlist_renamed(sp_playlist *pl,
-                                 void *userdata);
-
 
 #endif
