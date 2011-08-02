@@ -105,6 +105,10 @@ int SpotWorker::start(QString username, QString password)
     // free-text string [1, 255] characters.
     config.user_agent = "spotify-session-example";
 
+    config.compress_playlists = false;
+    config.dont_save_metadata_for_playlists = false;
+    config.initially_unload_playlists = false;
+
     // Register the callbacks.
     config.callbacks = &g_callbacks;
 
@@ -152,6 +156,7 @@ void SpotWorker::performSearch(QString query)
     const int album_count = 100;
     const int artist_offset = 0;
     const int artist_count = 100;
+
     g_search = sp_search_create(currentSession,
                                 needle,
                                 track_offset,
@@ -252,7 +257,10 @@ void SpotWorker::emitLoggedInSignal(sp_session *session, sp_error error)
             //    g_jukeboxlist = pl;
             //    try_jukebox_start();
             //}
-            DEBUG printf("Playlist found: %s\n", sp_playlist_name(pl));
+            if (sp_playlist_is_loaded(pl)){
+                DEBUG printf("Playlist found: %s %i\n",
+                             sp_playlist_name(pl), sp_playlist_num_tracks(pl));
+            }
         }
 
         /*

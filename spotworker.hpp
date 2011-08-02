@@ -99,7 +99,6 @@ class SpotWorker : public QObject {
     void emitSessionReadySignal(sp_session *session);
     void emitSearchCompleteSignal(sp_search *search);
 
-    void performSearch(QString query);
     //These following three funnctions had sp_session *session parameter.
     //removal experimental
     void loadPlayer(sp_track *track, bool rip, SoundSaver::FileType type);
@@ -151,6 +150,7 @@ class SpotWorker : public QObject {
     void netConnection();
     void rxDataReady();
     void seekPlayer(int offset);
+    void performSearch(QString query);
 
  signals:
     void loggedIn(sp_session *session, sp_error error);
