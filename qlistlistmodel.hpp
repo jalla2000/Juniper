@@ -34,7 +34,7 @@ class QListListModel : public QAbstractItemModel
     Q_OBJECT
 
  public:
-    QListListModel(sp_playlistcontainer *plc, QObject *parent = 0);
+    QListListModel(QObject *parent = 0);
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     QModelIndex parent(const QModelIndex&) const;
     int rowCount(const QModelIndex &index) const;
@@ -48,6 +48,9 @@ class QListListModel : public QAbstractItemModel
     bool isSearchList(const QModelIndex &index);
     void addSearch(sp_search *search);
     int playListCount(void);
+
+ public slots:
+    void setPlayLists(sp_playlistcontainer *plc);
 
  private:
     int selectedIndex;  //bad idea?

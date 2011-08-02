@@ -26,6 +26,7 @@
 #include <QVariant>
 #include <QModelIndex>
 #include <QAbstractItemModel>
+#include <QPixmap>
 
 #include <libspotify/api.h>
 #include "qlistlistmodel.hpp"
@@ -35,11 +36,30 @@
 #define DEBUGLEVEL 0
 #define DEBUG if(DEBUGLEVEL)
 
-QListListModel::QListListModel(sp_playlistcontainer *plc, QObject *parent)
+QListListModel::QListListModel(QObject *parent)
   : QAbstractItemModel(parent)
 {
-  this->playLists = plc;
-  this->searchLists = new QList<sp_search*>;
+  playLists = NULL;
+  searchLists = new QList<sp_search*>;
+}
+
+void QListListModel::setPlayLists(sp_playlistcontainer *plc)
+{
+  beginResetModel();
+
+  int listCount = sp_playlistcontainer_num_playlists(plc);
+  for(int i = 0; i < listCount; i++){
+    sp_playlist *pl = sp_playlistcontainer_playlist(plc, i);
+    const char *listName = sp_playlist_name(pl);
+    if (sp_playlist_is_loaded(pl)){
+      printf("List %i/%i: %s\n", i, listCount, listName);
+    } else
+      printf("List %i not loaded\n", i);
+  }
+
+  playLists = plc;
+
+  endResetModel();
 }
 
 /*
@@ -143,20 +163,21 @@ int QListListModel::playListCount(void)
 
 QVariant QListListModel::data(const QModelIndex &index, int role) const
 {
+    int row = index.row();
+    sp_playlist *pl = sp_playlistcontainer_playlist(this->playLists, row);
 
-    //printf("Role: %d\n", role);
-
-    if(role==Qt::DisplayRole){
-
-        int row = index.row();
-        //int column = index.column();
-        //printf("Requesting data from listlistmodel, row:%d, col:%d\n", row, column);
-
-        sp_playlist *pl = sp_playlistcontainer_playlist(this->playLists, row);
-
+    if (role == Qt::DisplayRole){
         return QString(QString::fromUtf8(sp_playlist_name(pl)));
-    }
-    else{
+    } else if (role == Qt::DecorationRole){
+        return QPixmap(":/gfx/album.svg").scaled(64, 64);
+        /*
+        // TODO request image through spotify helpers
+        byte imageId[20];
+        if (sp_playlist_get_image(pl, &imageId)){
+            sp_image *image = sp_image_create(
+        }
+        */
+    } else {
         return QVariant();
     }
 
