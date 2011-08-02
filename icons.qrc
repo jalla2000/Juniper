@@ -5,6 +5,6 @@
   <file>gfx/skip_forward.png</file>
   <file>gfx/stop.png</file>
   <file>gfx/net.png</file>
+  <file>gfx/album.svg</file>
 </qresource>
 </RCC>
-
