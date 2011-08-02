@@ -26,11 +26,6 @@
 
 #include "mainwindow.hpp"
 #include "spotworker.hpp"
-#include "qlistlistview.hpp"
-#include "qlistlistmodel.hpp"
-#include "qplaylistmodel.hpp"
-#include "qsearchlistmodel.hpp"
-#include "qplaylistview.hpp"
 
 #define DEBUGLEVEL 1
 #define DEBUG if(DEBUGLEVEL)
@@ -55,22 +50,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     listSplitter->setSizes(QList<int>() << 10 << 10000);
 
-    bool initialized=settings.value("initialized").toBool();
+    settingsDialog=new SettingsDialog;
 
-    if (!initialized){
-        qDebug() << "Setting initial settings...";
-        settings.setValue("initialized", true);
-        settings.setValue("ripFormat", SoundSaver::MP3);
-        settings.setValue("autoRip", false);
-    }
+    if (settings.value("spotify/username").toString().isEmpty())
+        settingsDialog->show();
 
     listListModel_ = new QListListModel(NULL);    this->setWindowTitle("Juniper");
     ripFormat_ = static_cast<SoundSaver::FileType>(settings.value("ripFormat").toUInt());
 
     guiUpdater_ = new QTimer;
     spotWorker = SpotWorker::getInstance();
-    spotWorker->start(settings.value("username").toString(),
-                      settings.value("password").toString());
+    spotWorker->start(settings.value("spotify/username").toString(),
+                      settings.value("spotify/password").toString());
     qDebug() << "SpotWorker started";
 
     connectSignals();
@@ -82,7 +73,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     statusBar()->showMessage(QString("Juniper ready to rock"));
     setMinimumSize(300, 200);
-    resize(800, 480);
+    resize(settings.value("initialX").toInt(),
+           settings.value("initialY").toInt());
 }
 
 void MainWindow::connectSignals()
@@ -106,9 +98,25 @@ void MainWindow::connectSignals()
             this, SLOT(searchComplete(sp_search*)) );
     connect(spotWorker, SIGNAL(loggedOut(sp_session*)),
             this, SLOT(loginFailed()) );
+    connect(spotWorker, SIGNAL(loggedIn(sp_session*, sp_error*)),
+            this, SLOT(loggedIn()) );
 
     connect(listView, SIGNAL(doubleClicked(const QModelIndex)),
             this, SLOT(songDoubleClicked(const QModelIndex)) );
+}
+
+void MainWindow::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu menu(this);
+    menu.addMenu(fileMenu);
+    menu.addMenu(settingsMenu);
+    menu.addMenu(helpMenu);
+    menu.exec(event->globalPos());
+}
+
+void MainWindow::showSettings()
+{
+    settingsDialog->show();
 }
 
 void MainWindow::executeSearch()
@@ -191,6 +199,10 @@ void MainWindow::searchComplete(sp_search *search)
     //TODO: we might have to free the search pointer or some shit
 }
 
+void MainWindow::loggedIn()
+{
+    searchBox->setEnabled(true);
+}
 
 void MainWindow::about()
 {
@@ -245,13 +257,13 @@ void MainWindow::updateGui()
 
 void MainWindow::updatePlaylistList(sp_playlistcontainer *plc)
 {
-    //int listCount = sp_playlistcontainer_num_playlists(plc);
-    /*
-      for(int i = 0; i < listCount; i++){
+    int listCount = sp_playlistcontainer_num_playlists(plc);
+    for(int i = 0; i < listCount; i++){
       sp_playlist *pl = sp_playlistcontainer_playlist(plc, i);
       const char *listName = sp_playlist_name(pl);
     }
-    */
+
+
     if(!listListModel_)
         listListModel_ = new QListListModel(plc);
     listListView->setModel(listListModel_);

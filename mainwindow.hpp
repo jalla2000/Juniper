@@ -27,11 +27,10 @@
 #include "ui_juniper.h"
 
 #include "spotworker.hpp"
-#include "qlistlistview.hpp"
 #include "qlistlistmodel.hpp"
-#include "qplaylistview.hpp"
 #include "qplaylistmodel.hpp"
 #include "qsearchlistmodel.hpp"
+#include "settingsdialog.h"
 
 class MainWindow : public QMainWindow, private Ui::Juniper {
 
@@ -60,6 +59,8 @@ class MainWindow : public QMainWindow, private Ui::Juniper {
     SoundSaver::FileType ripFormat_;
     QActionGroup *formatGroup_;
 
+    SettingsDialog *settingsDialog;
+
     //functions
     void connectSignals();
 
@@ -73,11 +74,16 @@ class MainWindow : public QMainWindow, private Ui::Juniper {
     void listListClicked(const QModelIndex &index);
     void listListDoubleClicked(const QModelIndex &index);
     void loginFailed(void);
+    void loggedIn();
     void about();
     void updateGui();
     void toggleAutoRip(bool);
     void playStop();
     void updatePlaylistList(sp_playlistcontainer *plc);
+    void showSettings();
+
+ protected:
+    void contextMenuEvent(QContextMenuEvent *event);
 
 };
 

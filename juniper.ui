@@ -25,6 +25,9 @@
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QComboBox" name="searchBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -58,10 +61,26 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QListView" name="listListView"/>
-      <widget class="QPlayListView" name="listView">
+      <widget class="QListView" name="listListView">
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+      </widget>
+      <widget class="QTableView" name="listView">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <property name="showGrid">
+        <bool>false</bool>
+       </property>
        <attribute name="horizontalHeaderStretchLastSection">
         <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
        </attribute>
       </widget>
      </widget>
@@ -173,6 +192,7 @@
     </widget>
     <addaction name="toggleAutoRipAction"/>
     <addaction name="formatMenu"/>
+    <addaction name="configAction"/>
    </widget>
    <widget class="QMenu" name="helpMenu">
     <property name="title">
@@ -252,14 +272,12 @@
     <string>&amp;AutoRip</string>
    </property>
   </action>
+  <action name="configAction">
+   <property name="text">
+    <string>Configuration</string>
+   </property>
+  </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QPlayListView</class>
-   <extends>QTableView</extends>
-   <header>qplaylistview.hpp</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="icons.qrc"/>
  </resources>
@@ -408,6 +426,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>configAction</sender>
+   <signal>triggered()</signal>
+   <receiver>Juniper</receiver>
+   <slot>showSettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>318</x>
+     <y>246</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>executeSearch()</slot>
@@ -415,5 +449,6 @@
   <slot>playStop()</slot>
   <slot>about()</slot>
   <slot>toggleRipFormat()</slot>
+  <slot>showSettings()</slot>
  </slots>
 </ui>
