@@ -6,5 +6,8 @@
   <file>gfx/stop.png</file>
   <file>gfx/net.png</file>
   <file>gfx/album.svg</file>
+  <file>gfx/logo.png</file>
+  <file>gfx/icon.png</file>
+  <file>gfx/net.png</file>
 </qresource>
 </RCC>

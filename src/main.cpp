@@ -30,7 +30,6 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QCoreApplication::setOrganizationName("Juniper");
     QCoreApplication::setApplicationName("Juniper");
-    app.setWindowIcon(QPixmap("gfx/iconlogo2_32.png"));
 
     MainWindow mainframe;
 
