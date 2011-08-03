@@ -1,10 +1,9 @@
-/*
- * (C) Copyright 2009 Pål Driveklepp
+/**
+ * @file settingsdialog.h
+ * @author Bernd Wachter <bwachter@lart.info>
+ * @date 2011
  *
- * Written by: Pål Driveklepp <jalla2000@gmail.com>
- *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * @section license_sec License
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,24 +20,29 @@
  *
  */
 
-#ifndef QLISTLISTVIEW_H
-#define QLISTLISTVIEW_H
+#ifndef _SETTINGSDIALOG_H
+#define _SETTINGSDIALOG_H
 
-#include <QObject>
-#include <QListView>
-#include <libspotify/api.h>
+#include <QtGui>
+#include "ui_settingsdialog.h"
 
-class QListListView : public QListView
-{
+class SettingsDialog: public QDialog, private Ui::SettingsDialog {
     Q_OBJECT
 
- public:
-    QListListView(QWidget *parent = 0);
- private:
+        public:
+    SettingsDialog();
 
- protected:
-    //void contextMenuEvent(QContextMenuEvent *event);
+  private:
+    QSettings settings;
 
+    public slots:
+
+    private slots:
+    void accept();
+
+  signals:
+    void configurationChanged();
 };
+
 
 #endif

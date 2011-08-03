@@ -3,3 +3,5 @@ juniper
 juniper.pro
 appkey.c
 libspotify*
+doc/html
+doc/man

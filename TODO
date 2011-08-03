@@ -1,0 +1,9 @@
+- Soundworker needs to be reworked:
+  - Playing times are calculated based on the _streaming_, not the playback
+    On fast connections the info slider easily runs twice as fast as it should
+  - We should signal when playback is over. This can be used to skip to the
+    next song
+  - Implement seeking
+  - Save/load the latest searches
+  - Display search suggestions and allow searching for them
+  - add UI to input username/password

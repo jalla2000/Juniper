@@ -58,7 +58,10 @@ fi
 echo "Generating makefile..."
 qmake -project -norecursive -o juniper.pro \
     QT+=network CONFIG+=link_pkgconfig PKGCONFIG+="alsa libspotify sndfile" \
-    INSTALLS+=target target.path=/usr/bin/ $LIBSPOTIFY_INSTALLS
+    INSTALLS+=target target.path=/usr/bin/ $LIBSPOTIFY_INSTALLS \
+    OBJECTS_DIR=build MOC_DIR=build RCC_DIR=build \
+    UI_DIR=build UI_HEADERS_DIR=build UI_SOURCES_DIR=build \
+    src/
 echo "Generating meta objects..."
 qmake
 

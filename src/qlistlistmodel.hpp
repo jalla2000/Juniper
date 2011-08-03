@@ -1,10 +1,10 @@
-/*
- * (C) Copyright 2009 Pål Driveklepp
+/**
+ * @file qlistlistmodel.hpp
+ * @author Pål Driveklepp <jalla2000@gmail.com>
+ * @author Bernd Wachter <bwachter@lart.info>
+ * @date 2009-2011
  *
- * Written by: Pål Driveklepp <jalla2000@gmail.com>
- *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * @section license_sec License
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,32 +21,41 @@
  *
  */
 
-#ifndef QPLAYLISTMODEL_H
-#define QPLAYLISTMODEL_H
+#ifndef QLISTLISTMODEL_H
+#define QLISTLISTMODEL_H
 
 #include <QObject>
-#include <QAbstractTableModel>
+#include <QAbstractItemModel>
+
 #include <libspotify/api.h>
 
-class QPlayListModel : public QAbstractTableModel
+class QListListModel : public QAbstractItemModel
 {
     Q_OBJECT
 
  public:
-    QPlayListModel(sp_playlist *pl, QObject *parent = 0);
+    QListListModel(QObject *parent = 0);
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+    QModelIndex parent(const QModelIndex&) const;
     int rowCount(const QModelIndex &index) const;
-    int getTrackCount();
     int columnCount(const QModelIndex &index) const;
     QVariant data(const QModelIndex &index, int role) const;
-    bool insertRows(int row, sp_track *track);
+    //bool insertRows(int row, sp_track *track);
+    sp_playlist *getPlayList(const QModelIndex &index);
+    sp_search *getSearchList(const QModelIndex &index);
     sp_track *getTrack(const QModelIndex &index);
-    QVariant headerData(int section, Qt::Orientation orient, int role) const;
+    //QVariant headerData(int section, Qt::Orientation orient, int role) const;
+    bool isSearchList(const QModelIndex &index);
+    void addSearch(sp_search *search);
+    int playListCount(void);
+
+ public slots:
+    void setPlayLists(sp_playlistcontainer *plc);
 
  private:
-    sp_playlist *spPlayList_;
-    int columns_;
-    int currentTrack_;
+    int selectedIndex;  //bad idea?
+    QList<sp_search*> *searchLists;
+    sp_playlistcontainer *playLists;
 };
 
 #endif
