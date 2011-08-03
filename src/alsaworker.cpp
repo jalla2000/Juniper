@@ -1,10 +1,9 @@
-/*
- * (C) Copyright 2009 Pål Driveklepp
+/**
+ * @file alsaworker.cpp
+ * @author Pål Driveklepp <jalla2000@gmail.com>
+ * @date 2009
  *
- * Written by: Pål Driveklepp <jalla2000@gmail.com>
- *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * @section license_sec License
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +33,6 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-#include "queue.h"
 #include "alsaworker.hpp"
 #include <sndfile.h>
 

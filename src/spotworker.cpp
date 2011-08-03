@@ -1,10 +1,10 @@
-/*
- * (C) Copyright 2009 Pål Driveklepp
+/**
+ * @file spotworker.cpp
+ * @author Pål Driveklepp <jalla2000@gmail.com>
+ * @author Bernd Wachter <bwachter@lart.info>
+ * @date 2009-2011
  *
- * Written by: Pål Driveklepp <jalla2000@gmail.com>
- *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * @section license_sec License
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,6 @@
 #include <QIODevice>
 #include <QTextStream>
 #include <QMessageBox>
-
-#include "spotify.h"
 
 #include "spotworker.hpp"
 #include "alsaworker.hpp"
