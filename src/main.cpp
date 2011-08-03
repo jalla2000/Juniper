@@ -1,10 +1,10 @@
-/*
- * (C) Copyright 2009 Pål Driveklepp
+/**
+ * @file main.cpp
+ * @author Pål Driveklepp <jalla2000@gmail.com>
+ * @author Bernd Wachter <bwachter@lart.info>
+ * @date 2009-2011
  *
- * Written by: Pål Driveklepp <jalla2000@gmail.com>
- *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * @section license_sec License
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,28 +21,17 @@
  *
  */
 
+#include "mainwindow.hpp"
+#include "spotworker.hpp"
 
-#ifndef QPLAYLISTVIEW_H
-#define QPLAYLISTVIEW_H
-
-#include <QObject>
-#include <QTableView>
-#include <libspotify/api.h>
-
-class QPlayListView : public QTableView
+int main(int argc, char *argv[])
 {
-    Q_OBJECT
-	
- public:
-    QPlayListView(QWidget *parent = 0);
- private:
-    QAction *cutAct;
-    QAction *copyAct;
-    QAction *pasteAct;
-    
- protected:
-    void contextMenuEvent(QContextMenuEvent *event);
+    qDebug() << "Juniper starting...";
+    QApplication app(argc, argv);
+    QCoreApplication::setOrganizationName("Juniper");
+    QCoreApplication::setApplicationName("Juniper");
 
-};
+    MainWindow mainframe;
 
-#endif
+    return app.exec();
+}

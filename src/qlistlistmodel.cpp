@@ -1,10 +1,10 @@
-/*
- * (C) Copyright 2009 Pål Driveklepp
+/**
+ * @file qlistlistmodel.cpp
+ * @author Pål Driveklepp <jalla2000@gmail.com>
+ * @author Bernd Wachter <bwachter@lart.info>
+ * @date 2009-2011
  *
- * Written by: Pål Driveklepp <jalla2000@gmail.com>
- *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * @section license_sec License
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <QVariant>
 #include <QModelIndex>
 #include <QAbstractItemModel>
+#include <QPixmap>
 
 #include <libspotify/api.h>
 #include "qlistlistmodel.hpp"
@@ -35,11 +36,30 @@
 #define DEBUGLEVEL 0
 #define DEBUG if(DEBUGLEVEL)
 
-QListListModel::QListListModel(sp_playlistcontainer *plc, QObject *parent)
+QListListModel::QListListModel(QObject *parent)
   : QAbstractItemModel(parent)
 {
-  this->playLists = plc;
-  this->searchLists = new QList<sp_search*>;
+  playLists = NULL;
+  searchLists = new QList<sp_search*>;
+}
+
+void QListListModel::setPlayLists(sp_playlistcontainer *plc)
+{
+  beginResetModel();
+
+  int listCount = sp_playlistcontainer_num_playlists(plc);
+  for(int i = 0; i < listCount; i++){
+    sp_playlist *pl = sp_playlistcontainer_playlist(plc, i);
+    const char *listName = sp_playlist_name(pl);
+    if (sp_playlist_is_loaded(pl)){
+      printf("List %i/%i: %s\n", i, listCount, listName);
+    } else
+      printf("List %i not loaded\n", i);
+  }
+
+  playLists = plc;
+
+  endResetModel();
 }
 
 /*
@@ -47,23 +67,23 @@ QVariant QListListModel::headerData(int section, Qt::Orientation orientation, in
 {
 
     if (role != Qt::DisplayRole)
-	return QVariant();
+        return QVariant();
 
     if(orientation==Qt::Horizontal){
-	//printf("DEBUG: headerdata requested. section was: %d\n", section);
-	switch(section){
-	case 0:
-	    return QVariant("Title");
-	case 1:
-	    return QVariant("Artist");
-	case 2:
-	    return QVariant("Album");
-	default:
-	    return QVariant("Error");
-	}
+        //printf("DEBUG: headerdata requested. section was: %d\n", section);
+        switch(section){
+        case 0:
+            return QVariant("Title");
+        case 1:
+            return QVariant("Artist");
+        case 2:
+            return QVariant("Album");
+        default:
+            return QVariant("Error");
+        }
     }
     else {
-	return section+1;
+        return section+1;
     }
 }
 */
@@ -83,7 +103,7 @@ int QListListModel::rowCount(const QModelIndex &index) const
     int count = 0;
     //TODO: add searchLists and playLists
     if(this->playLists)
-	count += sp_playlistcontainer_num_playlists(this->playLists);;
+        count += sp_playlistcontainer_num_playlists(this->playLists);;
     //printf("Count: %d\n", count);
     return count;
 }
@@ -107,11 +127,11 @@ sp_search *QListListModel::getSearchList(const QModelIndex &index)
 {
     int row = index.row();
     if(row>(searchLists->size()-1)){
-	DEBUG printf("Serirorus error occured. Bounds check failed in listlistmodel.\n");
-	return this->searchLists->at(0);
+        DEBUG printf("Serirorus error occured. Bounds check failed in listlistmodel.\n");
+        return this->searchLists->at(0);
     }
     else{
-	return this->searchLists->at(row);
+        return this->searchLists->at(row);
     }
 }
 
@@ -120,15 +140,15 @@ sp_track *QListListModel::getTrack(const QModelIndex &index)
     //TODO: add extra bounds checking on index.row()
     DEBUG printf("QListListModel: getTrack()\n");
     if(selectedIndex < searchLists->size()){
-	return sp_search_track(searchLists->at(selectedIndex), index.row());
+        return sp_search_track(searchLists->at(selectedIndex), index.row());
     }
     else if ((selectedIndex - searchLists->size()) < playListCount()){
-	sp_playlist *pl = sp_playlistcontainer_playlist(playLists, selectedIndex - searchLists->size());
-	return sp_playlist_track(pl, index.row());
+        sp_playlist *pl = sp_playlistcontainer_playlist(playLists, selectedIndex - searchLists->size());
+        return sp_playlist_track(pl, index.row());
     }
     else{
-	DEBUG printf("FATAL ERROR: bounds check failed in QListListModel::getTrack\n");
-	DEBUG printf("index: %d, searchLists->size = %d, playListCount() = %d\n", selectedIndex, searchLists->size(), playListCount());
+        DEBUG printf("FATAL ERROR: bounds check failed in QListListModel::getTrack\n");
+        DEBUG printf("index: %d, searchLists->size = %d, playListCount() = %d\n", selectedIndex, searchLists->size(), playListCount());
     }
     return NULL;
 }
@@ -136,28 +156,29 @@ sp_track *QListListModel::getTrack(const QModelIndex &index)
 int QListListModel::playListCount(void)
 {
     if(playLists)
-	return sp_playlistcontainer_num_playlists(this->playLists);
+        return sp_playlistcontainer_num_playlists(this->playLists);
     else
-	return 0;
+        return 0;
 }
 
 QVariant QListListModel::data(const QModelIndex &index, int role) const
 {
-    
-    //printf("Role: %d\n", role);
+    int row = index.row();
+    sp_playlist *pl = sp_playlistcontainer_playlist(this->playLists, row);
 
-    if(role==Qt::DisplayRole){
-	
-	int row = index.row();
-	//int column = index.column();
-	//printf("Requesting data from listlistmodel, row:%d, col:%d\n", row, column);
-
-	sp_playlist *pl = sp_playlistcontainer_playlist(this->playLists, row);
-
-	return QString(QString::fromUtf8(sp_playlist_name(pl)));
-    }
-    else{
-	return QVariant();
+    if (role == Qt::DisplayRole){
+        return QString(QString::fromUtf8(sp_playlist_name(pl)));
+    } else if (role == Qt::DecorationRole){
+        return QPixmap(":/gfx/album.svg").scaled(64, 64);
+        /*
+        // TODO request image through spotify helpers
+        byte imageId[20];
+        if (sp_playlist_get_image(pl, &imageId)){
+            sp_image *image = sp_image_create(
+        }
+        */
+    } else {
+        return QVariant();
     }
 
     return "Error...";
@@ -187,13 +208,12 @@ void QListListModel::addSearch(sp_search *search)
 bool QListListModel::isSearchList(const QModelIndex &index)
 {
     if(index.row() < searchLists->size())
-	return true;
+        return true;
     else
-	return false;
+        return false;
 }
 
 QModelIndex QListListModel::parent(const QModelIndex&) const
 {
     return QModelIndex();
 }
-

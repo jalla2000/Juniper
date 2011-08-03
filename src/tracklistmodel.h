@@ -1,10 +1,10 @@
-/*
- * (C) Copyright 2009 Pål Driveklepp
+/**
+ * @file tracklistmodel.h
+ * @author Pål Driveklepp <jalla2000@gmail.com>
+ * @author Bernd Wachter <bwachter@lart.info>
+ * @date 2009-2011
  *
- * Written by: Pål Driveklepp <jalla2000@gmail.com>
- *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * @section license_sec License
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,38 +21,36 @@
  *
  */
 
-#ifndef QLISTLISTMODEL_H
-#define QLISTLISTMODEL_H
+#ifndef TRACKLISTMODEL_H
+#define TRACKLISTMODEL_H
 
 #include <QObject>
-#include <QAbstractItemModel>
-
+#include <QAbstractTableModel>
 #include <libspotify/api.h>
 
-class QListListModel : public QAbstractItemModel
+class TrackListModel : public QAbstractTableModel
 {
     Q_OBJECT
-	
+
  public:
-    QListListModel(sp_playlistcontainer *plc, QObject *parent = 0);
+    TrackListModel(QObject *parent = 0);
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
-    QModelIndex parent(const QModelIndex&) const;
     int rowCount(const QModelIndex &index) const;
     int columnCount(const QModelIndex &index) const;
     QVariant data(const QModelIndex &index, int role) const;
     //bool insertRows(int row, sp_track *track);
-    sp_playlist *getPlayList(const QModelIndex &index);
-    sp_search *getSearchList(const QModelIndex &index);
     sp_track *getTrack(const QModelIndex &index);
-    //QVariant headerData(int section, Qt::Orientation orient, int role) const;    
-    bool isSearchList(const QModelIndex &index);
-    void addSearch(sp_search *search);
-    int playListCount(void);
+    QVariant headerData(int section, Qt::Orientation orient, int role) const;
+
+  public slots:
+    void setSearch(sp_search *search);
+    void setPlaylist(sp_playlist *pl);
 
  private:
-    int selectedIndex;	//bad idea?
-    QList<sp_search*> *searchLists;
-    sp_playlistcontainer *playLists;
+    sp_search *searchList;
+    sp_playlist *playList;
+    int columns_;
+    int currentTrack_;
 };
 
 #endif
