@@ -1,6 +1,11 @@
 #!/bin/bash
 
-LIBSPOTIFY="libspotify-0.0.8-linux6-i686"
+ARCH=$(uname -m)
+if [ "$ARCH" == "x86_64" ]; then
+    LIBSPOTIFY="libspotify-0.0.8-linux6-x86_64"
+else
+    LIBSPOTIFY="libspotify-0.0.8-linux6-i686"
+fi
 
 # install libspotify into source tree per default
 if [ -z "$SPOTIFY" ]; then
