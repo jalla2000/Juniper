@@ -9,7 +9,7 @@ fi
 
 # install libspotify into source tree per default
 if [ -z "$SPOTIFY" ]; then
-    SPOTIFY=local
+    SPOTIFY=global
 fi
 
 echo "Cleaning up..."
@@ -64,7 +64,7 @@ echo "Generating makefile..."
 qmake -project -norecursive -o juniper.pro \
     QT+=network CONFIG+=link_pkgconfig PKGCONFIG+="alsa libspotify sndfile" \
     INSTALLS+=target target.path=/usr/bin/ $LIBSPOTIFY_INSTALLS \
-    OBJECTS_DIR=build MOC_DIR=build RCC_DIR=build \
+    OBJECTS_DIR=build MOC_DIR=build RCC_DIR=build QMAKE_CXXFLAGS+="-Werror -Wextra"\
     UI_DIR=build UI_HEADERS_DIR=build UI_SOURCES_DIR=build \
     src/
 echo "Generating meta objects..."

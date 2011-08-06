@@ -24,9 +24,8 @@
 #ifndef _SPOTIFY_H
 #define _SPOTIFY_H
 
-#include <libspotify/api.h>
-
 #include "spotworker.hpp"
+#include <libspotify/api.h>
 
 #define DEBUGLEVEL 1
 #define DEBUG if(DEBUGLEVEL)
@@ -218,49 +217,5 @@ extern "C" void tracks_moved(sp_playlist * pl,
  */
 extern "C" void tracks_removed(sp_playlist * pl, const int * tracks,
                                int num_tracks, void * userdata);
-
-
-static sp_session_callbacks g_callbacks = {
-    &logged_in,
-    &logged_out,
-    &metadata_updated,
-    &connection_error,
-    NULL,
-    &notify_main_thread,
-    &music_delivery,
-    &play_token_lost,
-    &log_message,
-    &end_of_track,
-    NULL,
-    NULL,
-    &stop_playback,
-    NULL,
-    NULL,
-    NULL
-};
-
-static sp_playlistcontainer_callbacks pc_callbacks = {
-        &playlist_added,
-        &playlist_removed,
-        &playlist_moved,
-        &container_loaded
-};
-
-static sp_playlist_callbacks pl_callbacks = {
-    &tracks_added,
-    &tracks_removed,
-    &tracks_moved,
-    &playlist_renamed,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-};
-
 
 #endif
