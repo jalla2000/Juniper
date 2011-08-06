@@ -23,6 +23,21 @@
 
 #include "spotify.h"
 
+static sp_playlist_callbacks pl_callbacks = {
+    &tracks_added,
+    &tracks_removed,
+    &tracks_moved,
+    &playlist_renamed,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+};
 
 extern "C" void connection_error(sp_session *session, sp_error error)
 {
@@ -49,8 +64,6 @@ extern "C" void logged_in(sp_session *session, sp_error error)
 
 extern "C" void logged_out(sp_session *session)
 {
-    //if (g_exit_code< 0)
-    //  g_exit_code = 0;
     SpotWorker *sw = SpotWorker::getInstance();
     sw->emitLoggedOutSignal(session);
     DEBUG printf("Logged out of Spotify...\n");
@@ -58,8 +71,6 @@ extern "C" void logged_out(sp_session *session)
 
 extern "C" void notify_main_thread(sp_session *)
 {
-    //pthread_kill(g_main_thread, SIGIO);
-    //printf("notify_main_thred called!\n");
 }
 
 extern "C" int music_delivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames)
@@ -86,8 +97,9 @@ extern "C" void end_of_track(sp_session * /*session*/)
     sw->endOfTrack();
 }
 
-extern "C" void stop_playback(sp_session * /*session*/){
-  printf("Asked to stop playback\n");
+extern "C" void stop_playback(sp_session * /*session*/)
+{
+    printf("%s:%s: not implemente!\n", __FILE__, __func__);
 }
 
 extern "C" void sigIgn(int signo)
@@ -95,27 +107,19 @@ extern "C" void sigIgn(int signo)
     DEBUG printf("sigIgn: %d\n", signo);
 }
 
-extern "C" void metadata_updated(sp_session *session)
+extern "C" void metadata_updated(sp_session * /*session*/)
 {
-    //dummy to avoid compile warning
-    sp_session *jalla = session;
-    jalla = jalla;
 }
 
-extern "C" void session_ready(sp_session *session)
+extern "C" void session_ready(sp_session * session)
 {
     DEBUG printf("Session ready called!\n");
-
     SpotWorker *sw = SpotWorker::getInstance();
     sw->emitSessionReadySignal(session);
 }
 
-extern "C" void search_complete(sp_search *search, void *userdata)
+extern "C" void search_complete(sp_search * search, void * /*userdata*/)
 {
-    //dummy to avoid compile warning
-    void *jalla = userdata;
-    jalla = jalla;
-
     SpotWorker *sw = SpotWorker::getInstance();
 
     //TODO: move these checks to signal receiver
@@ -127,9 +131,9 @@ extern "C" void search_complete(sp_search *search, void *userdata)
         fprintf(stderr, "Failed to search: %s\n", sp_error_message(sp_search_error(search)));
         sw->emitSearchCompleteSignal(NULL);
     }
-    //sp_search_release(sw->g_search);
-
-    //terminate();
+    //TODO?:
+    // sp_search_release(sw->g_search);
+    // terminate();
 }
 
 extern "C" void session_terminated(void)
@@ -147,8 +151,6 @@ extern "C" void playlist_added(sp_playlistcontainer *playlists,
                  position,
                  sp_playlist_name(addedPlaylist));
     sp_playlist_add_callbacks(addedPlaylist, &pl_callbacks, NULL);
-
-    qDebug() << "SpotWorker: new playlist" << sp_playlist_name(addedPlaylist);
     SpotWorker *sw = SpotWorker::getInstance();
     sw->emitPlaylistAdded(playlists);
 }
@@ -191,10 +193,6 @@ extern "C" void tracks_added(sp_playlist * /*pl*/,
                              int /*position*/,
                              void * /*userdata*/)
 {
-    /*
-        if (pl != g_jukeboxlist)
-                return;
-    */
     DEBUG printf("%d tracks were added to a playlist\n", num_tracks);
     fflush(stdout);
 }
@@ -202,18 +200,6 @@ extern "C" void tracks_added(sp_playlist * /*pl*/,
 extern "C" void tracks_removed(sp_playlist * /*pl*/, const int * /*tracks*/,
                                int num_tracks, void * /*userdata*/)
 {
-    //int i, k = 0;
-
-    /*
-    if (pl != g_jukeboxlist)
-        return;
-
-    for (i = 0; i < num_tracks; ++i)
-        if (tracks[i] < g_track_index)
-            ++k;
-
-    g_track_index -= k;
-    */
     DEBUG printf("%d tracks were removed from a playlist\n", num_tracks);
     fflush(stdout);
 }
@@ -224,22 +210,14 @@ extern "C" void tracks_moved(sp_playlist * /*pl*/,
                              int /*new_position*/,
                              void * /*userdata*/)
 {
-    //TODO: Use more function parameters
-    /*
-        if (pl != g_jukeboxlist)
-                return;
-    */
-        DEBUG printf("%d tracks were moved around in a playlist\n", num_tracks);
-        fflush(stdout);
+    DEBUG printf("%d tracks were moved around in a playlist\n", num_tracks);
+    fflush(stdout);
 }
 
 extern "C" void playlist_renamed(sp_playlist *pl, void * /*userdata*/)
 {
-        const char *name = sp_playlist_name(pl);
+    const char *name = sp_playlist_name(pl);
 
-        DEBUG printf("Current playlist renamed to \"%s\".\n", name);
-        //SpotWorker *sw = SpotWorker::getInstance();
-        //sw->emitPlaylistAdded(playlists);
-
-        //sp_session_player_unload(g_sess);
+    DEBUG printf("Current playlist renamed to \"%s\".\n", name);
+    // TODO: sw->emitPlaylistAdded(playlists);
 }
