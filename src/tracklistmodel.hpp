@@ -47,8 +47,8 @@ class TrackListModel : public QAbstractTableModel
     void setPlaylist(sp_playlist *pl);
 
  private:
-    sp_search *searchList;
-    sp_playlist *playList;
+    sp_search * searchList_;
+    sp_playlist * playList_;
     int columns_;
     int currentTrack_;
 };

@@ -21,6 +21,8 @@
  *
  */
 
+#include "tracklistmodel.hpp"
+
 #include <QAbstractTableModel>
 #include <QModelIndex>
 #include <QVariant>
@@ -29,8 +31,6 @@
 #include <stdlib.h>
 #include <QDebug>
 
-#include "tracklistmodel.h"
-
 #define DEBUGLEVEL 0
 #define DEBUG if(DEBUGLEVEL)
 
@@ -38,8 +38,8 @@ TrackListModel::TrackListModel(QObject *parent)
   : QAbstractTableModel(parent)
 {
   this->columns_ = 3;
-  searchList = NULL;
-  playList = NULL;
+  searchList_ = NULL;
+  playList_ = NULL;
 }
 
 QVariant TrackListModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -72,7 +72,7 @@ void TrackListModel::setSearch(sp_search *search)
 {
     beginResetModel();
 
-    playList = NULL;
+    playList_ = NULL;
     qDebug() << "Query          :" << sp_search_query(search) << "\n"
              << "Did you mean   :" << sp_search_did_you_mean(search) << "\n"
              << "Tracks in total:" << sp_search_total_tracks(search);
@@ -100,7 +100,7 @@ void TrackListModel::setSearch(sp_search *search)
     }
     */
 
-    searchList = search;
+    searchList_ = search;
     endResetModel();
 }
 
@@ -108,10 +108,10 @@ void TrackListModel::setPlaylist(sp_playlist *pl)
 {
     beginResetModel();
 
-    searchList = NULL;
+    searchList_ = NULL;
 
 
-    playList = pl;
+    playList_ = pl;
     endResetModel();
 }
 
@@ -125,11 +125,11 @@ int TrackListModel::rowCount(const QModelIndex &index) const
 {
     Q_UNUSED(index);
 
-    if (searchList != NULL)
-        return sp_search_num_tracks(searchList);
+    if (searchList_ != NULL)
+        return sp_search_num_tracks(searchList_);
 
-    if (playList != NULL)
-        return sp_playlist_num_tracks(playList);
+    if (playList_ != NULL)
+        return sp_playlist_num_tracks(playList_);
 
     return 0;
 }
@@ -144,11 +144,11 @@ sp_track *TrackListModel::getTrack(const QModelIndex &index)
 {
     int row = index.row();
 
-    if (searchList != NULL)
-        return sp_search_track(searchList, row);
+    if (searchList_ != NULL)
+        return sp_search_track(searchList_, row);
 
-    if (playList != NULL)
-        return sp_playlist_track(playList, row);
+    if (playList_ != NULL)
+        return sp_playlist_track(playList_, row);
 
     return NULL;
 }
@@ -161,10 +161,10 @@ QVariant TrackListModel::data(const QModelIndex &index, int role) const
 
         sp_track *track;
 
-        if (searchList != NULL)
-            track = sp_search_track(searchList, row);
-        else if (playList != NULL)
-            track = sp_playlist_track(playList, row);
+        if (searchList_ != NULL)
+            track = sp_search_track(searchList_, row);
+        else if (playList_ != NULL)
+            track = sp_playlist_track(playList_, row);
         else
             return QVariant();
 

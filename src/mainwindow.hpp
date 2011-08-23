@@ -28,8 +28,9 @@
 
 #include "spotworker.hpp"
 #include "qlistlistmodel.hpp"
-#include "tracklistmodel.h"
 #include "settingsdialog.h"
+
+class TrackListModel;
 
 class MainWindow : public QMainWindow, private Ui::Juniper {
 
@@ -42,12 +43,12 @@ class MainWindow : public QMainWindow, private Ui::Juniper {
  private:
     QTimer *guiUpdater_;
 
-    QSettings settings;
-    SettingsDialog *settingsDialog;
+    QSettings settings_;
+    SettingsDialog *settingsDialog_;
 
     //models and structure
-    QListListModel *listListModel_;
-    TrackListModel *trackListModel;
+    QListListModel * listListModel_;
+    TrackListModel * trackListModel_;
 
     SoundSaver::FileType ripFormat_;
     QActionGroup *formatGroup_;

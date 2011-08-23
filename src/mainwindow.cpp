@@ -26,6 +26,7 @@
 
 #include "mainwindow.hpp"
 #include "spotworker.hpp"
+#include "tracklistmodel.hpp"
 
 #define DEBUGLEVEL 1
 #define DEBUG if(DEBUGLEVEL)
@@ -49,25 +50,25 @@ MainWindow::MainWindow(QWidget *parent)
 
     listSplitter->setSizes(QList<int>() << 10 << 10000);
 
-    settingsDialog=new SettingsDialog;
+    settingsDialog_ = new SettingsDialog;
 
-    if (settings.value("spotify/username").toString().isEmpty())
-        settingsDialog->show();
+    if (settings_.value("spotify/username").toString().isEmpty())
+        settingsDialog_->show();
 
-    searchBox->insertItems(0, settings.value("savedSearch").toStringList());
+    searchBox->insertItems(0, settings_.value("savedSearch").toStringList());
 
     listListModel_ = new QListListModel();
     listListView->setModel(listListModel_);
 
-    trackListModel = new TrackListModel();
-    trackList->setModel(trackListModel);
+    trackListModel_ = new TrackListModel();
+    trackList->setModel(trackListModel_);
 
-    ripFormat_ = static_cast<SoundSaver::FileType>(settings.value("ripFormat").toUInt());
+    ripFormat_ = static_cast<SoundSaver::FileType>(settings_.value("ripFormat").toUInt());
 
     guiUpdater_ = new QTimer;
     spotWorker = SpotWorker::getInstance();
-    spotWorker->start(settings.value("spotify/username").toString(),
-                      settings.value("spotify/password").toString());
+    spotWorker->start(settings_.value("spotify/username").toString(),
+                      settings_.value("spotify/password").toString());
     qDebug() << "SpotWorker started";
 
     connectSignals();
@@ -78,8 +79,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->show();
 
     statusBar()->showMessage(QString("Juniper ready to rock"));
-    resize(settings.value("initialX").toInt(),
-           settings.value("initialY").toInt());
+    resize(settings_.value("initialX").toInt(),
+           settings_.value("initialY").toInt());
 
 }
 
@@ -102,7 +103,7 @@ void MainWindow::connectSignals()
             this, SLOT(listListClicked(const QModelIndex)) );
 
     connect(spotWorker, SIGNAL(searchComplete(sp_search*)),
-            trackListModel, SLOT(setSearch(sp_search*)));
+            trackListModel_, SLOT(setSearch(sp_search*)));
 
     connect(spotWorker, SIGNAL(loggedOut(sp_session*)),
             this, SLOT(loginFailed()) );
@@ -128,24 +129,24 @@ void MainWindow::closeEvent(QCloseEvent *event)
     for (int i=0; i<20&&i<searchBox->count(); i++){
         searches.append(searchBox->itemText(i));
     }
-    settings.setValue("savedSearch", searches);
+    settings_.setValue("savedSearch", searches);
 
     event->accept();
 }
 
 void MainWindow::showSettings()
 {
-    settingsDialog->show();
+    settingsDialog_->show();
 }
 
 void MainWindow::songDoubleClicked(const QModelIndex &index)
 {
     qDebug() << "Song doubleclicked... Trying to play it...";
 
-    sp_track* track = trackListModel->getTrack(index);
+    sp_track* track = trackListModel_->getTrack(index);
 
     qDebug() << "Loading player...";
-    spotWorker->loadPlayer(track, settings.value("autoRip").toBool(), ripFormat_);
+    spotWorker->loadPlayer(track, settings_.value("autoRip").toBool(), ripFormat_);
     qDebug() << "Playing player...";
     spotWorker->playPlayer(true);
 }
@@ -223,13 +224,13 @@ void MainWindow::toggleRipFormat()
         format = SoundSaver::MP3;
 
     ripFormat_ = format;
-    settings.setValue("ripFormat", format);
+    settings_.setValue("ripFormat", format);
 }
 
 void MainWindow::toggleAutoRip(bool rip)
 {
     qDebug() << "AutoRip toggled";
-    settings.setValue("autoRip", rip);
+    settings_.setValue("autoRip", rip);
 }
 
 void MainWindow::listListClicked(const QModelIndex &index)
@@ -238,10 +239,10 @@ void MainWindow::listListClicked(const QModelIndex &index)
     qDebug() << "List in playlistlist clicked, index: " << index.row();
     if(listListModel_->isSearchList(index)){
         qDebug() << "Searchlist clicked...";
-        trackListModel->setSearch(listListModel_->getSearchList(index));
+        trackListModel_->setSearch(listListModel_->getSearchList(index));
     }
     else{
         qDebug() << "Playlist clicked...";
-        trackListModel->setPlaylist(listListModel_->getPlayList(index));
+        trackListModel_->setPlaylist(listListModel_->getPlayList(index));
     }
 }
