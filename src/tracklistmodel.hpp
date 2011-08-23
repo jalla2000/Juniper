@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef TRACKLISTMODEL_H
-#define TRACKLISTMODEL_H
+#ifndef TRACKLISTMODEL_HPP
+#define TRACKLISTMODEL_HPP
 
 #include <QObject>
 #include <QAbstractTableModel>

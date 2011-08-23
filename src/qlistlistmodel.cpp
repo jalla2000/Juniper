@@ -37,29 +37,17 @@
 #define DEBUG if(DEBUGLEVEL)
 
 QListListModel::QListListModel(QObject *parent)
-  : QAbstractItemModel(parent)
+    : QAbstractItemModel(parent)
 {
-  playLists = NULL;
-  searchLists = new QList<sp_search*>;
+    playLists = NULL;
+    searchLists = new QList<sp_search*>;
 }
 
 void QListListModel::setPlayLists(sp_playlistcontainer *plc)
 {
-  beginResetModel();
-
-  int listCount = sp_playlistcontainer_num_playlists(plc);
-  for(int i = 0; i < listCount; i++){
-    sp_playlist *pl = sp_playlistcontainer_playlist(plc, i);
-    const char *listName = sp_playlist_name(pl);
-    if (sp_playlist_is_loaded(pl)){
-      printf("List %i/%i: %s\n", i, listCount, listName);
-    } else
-      printf("List %i not loaded\n", i);
-  }
-
-  playLists = plc;
-
-  endResetModel();
+    beginResetModel();
+    playLists = plc;
+    endResetModel();
 }
 
 /*

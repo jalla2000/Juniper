@@ -217,7 +217,6 @@ extern "C" void tracks_moved(sp_playlist * /*pl*/,
 extern "C" void playlist_renamed(sp_playlist *pl, void * /*userdata*/)
 {
     const char *name = sp_playlist_name(pl);
-
-    DEBUG printf("Current playlist renamed to \"%s\".\n", name);
+    DEBUG printf("Playlist was renamed to \"%s\".\n", name);
     // TODO: sw->emitPlaylistAdded(playlists);
 }

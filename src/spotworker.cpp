@@ -236,17 +236,21 @@ void SpotWorker::emitLoggedInSignal(sp_session *session, sp_error error)
         if(listCount > 0)
             emit playlistAdded(playlists);
 
-        for (int i = 0; i < sp_playlistcontainer_num_playlists(playlists); ++i) {
+        for (int i = 0; i < listCount && i < 10; ++i) {
             sp_playlist *pl = sp_playlistcontainer_playlist(playlists, i);
 
             //TODO: register playback callback
             //sp_playlist_add_callbacks(pl, &pl_callbacks, NULL);
 
             if (sp_playlist_is_loaded(pl)){
-                DEBUG printf("Playlist found: %s %i\n",
+                DEBUG printf("Playlist found: %s (%i tracks)\n",
                              sp_playlist_name(pl), sp_playlist_num_tracks(pl));
             }
         }
+	DEBUG {
+	    if (listCount > 10)
+		printf("...and %d more.\n", listCount-10);
+	}
     }
 }
 
