@@ -237,16 +237,22 @@ void MainWindow::toggleAutoRip(bool rip)
     settings_.setValue("autoRip", rip);
 }
 
-void MainWindow::listListClicked(const QModelIndex &index)
+void MainWindow::listListClicked(const QModelIndex & index)
 {
     //TODO: pål
-    qDebug() << "List in playlistlist clicked, index: " << index.row();
+    DEBUG printf("List in playlistlist clicked, row/col=%d/%d\n",
+                 index.row(), index.column());
     if(listListModel_->isSearchList(index)){
         qDebug() << "Searchlist clicked...";
         trackListModel_->setSearch(listListModel_->getSearchList(index));
     }
     else{
+        DEBUG printf("MainWindow::%s: fetching playlist at col/row=%d/%d\n",
+                     __func__, index.column(), index.row());
+        assert(trackListModel_);
+        assert(listListModel_);
         qDebug() << "Playlist clicked...";
-        trackListModel_->setPlaylist(listListModel_->getPlayList(index));
+        sp_playlist * selectedPlayList = listListModel_->getPlayList(index);
+        trackListModel_->setPlaylist(selectedPlayList);
     }
 }
