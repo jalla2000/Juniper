@@ -67,8 +67,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     guiUpdater_ = new QTimer;
     spotWorker = SpotWorker::getInstance();
-    spotWorker->start(settings_.value("spotify/username").toString(),
-                      settings_.value("spotify/password").toString());
+    if (!spotWorker->start(settings_.value("spotify/username").toString(),
+                          settings_.value("spotify/password").toString()))
+    {
+        printf("Failet to start SpotWorker!\n");
+        assert(false);
+    }
     qDebug() << "SpotWorker started";
 
     connectSignals();

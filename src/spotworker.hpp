@@ -54,7 +54,7 @@ class SpotWorker : public QObject {
     {
         instanceFlag_ = false;
     }
-    int start(QString username, QString password);
+    bool start(QString username, QString password);
 
     void saveUser(QString user, QString pass);
 

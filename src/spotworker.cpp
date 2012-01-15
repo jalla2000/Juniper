@@ -51,18 +51,19 @@ static sp_session_callbacks g_callbacks = {
     &logged_out,
     &metadata_updated,
     &connection_error,
-    NULL,
+    NULL, /* message to user */
     &notify_main_thread,
     &music_delivery,
     &play_token_lost,
     &log_message,
     &end_of_track,
-    NULL,
-    NULL,
+    NULL, /* streaming error */
+    NULL, /* userinfo updated */
+    NULL, /* start playback */
     &stop_playback,
-    NULL,
-    NULL,
-    NULL
+    NULL, /* get audio buffer stats */
+    NULL, /* offline status updated */
+    NULL /* offline error */
 };
 
 static sp_playlistcontainer_callbacks pc_callbacks = {
@@ -97,36 +98,37 @@ SpotWorker::SpotWorker(QObject *parent)
     DEBUG printf("SpotWorker started\n");
 }
 
-int SpotWorker::start(QString username, QString password)
+bool SpotWorker::start(QString username, QString password)
 {
+    QByteArray cachePath, settingsPath;
+    cachePath = settings.value("spotify/cache").toString().toLocal8Bit();
+    settingsPath = settings.value("spotify/settings").toString().toLocal8Bit();
     sp_session_config config;
-    sp_error error;
-    QByteArray ba;
-
     config.api_version = SPOTIFY_API_VERSION;
-    ba = settings.value("spotify/cache").toString().toLocal8Bit();
-    config.cache_location = strdup(ba.data());
-    ba = settings.value("spotify/config").toString().toLocal8Bit();
-    config.settings_location = strdup(ba.data());
+    config.cache_location = strdup(cachePath.data());
+    config.settings_location = strdup(settingsPath.data());
     config.application_key = g_appkey;
     config.application_key_size = g_appkey_size;
     config.user_agent = "libspotify-client";
+    config.callbacks = &g_callbacks;
     config.compress_playlists = false;
     config.dont_save_metadata_for_playlists = false;
     config.initially_unload_playlists = false;
+    config.device_id = NULL;
+    config.tracefile = NULL;
 
-    config.callbacks = &g_callbacks;
-
-    error = sp_session_create(&config, &currentSession);
+    sp_error error = sp_session_create(&config, &currentSession);
     if (SP_ERROR_OK != error) {
         fprintf(stderr, "failed to create session: %s\n",
                 sp_error_message(error));
+        return false;
     }
 
     // TODO: add callback for error checking to adjust to API changes
     sp_session_login(currentSession,
                      username.toUtf8().data(),
-                     password.toUtf8().data());
+                     password.toUtf8().data(),
+                     true);
 
     eventTimer = new QTimer();
     connect(eventTimer, SIGNAL(timeout()), SLOT(processEvents()));
@@ -138,7 +140,7 @@ int SpotWorker::start(QString username, QString password)
     alsaWorker_ = new AlsaWorker();
     DEBUG printf("Spotworker started with soundSaver and alsaWorker constructed\n");
 
-    return 0; //TODO: return something else when stuff fail.
+    return true;
 }
 
 void SpotWorker::performSearch(QString query)

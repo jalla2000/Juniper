@@ -2,9 +2,9 @@
 
 ARCH=$(uname -m)
 if [ "$ARCH" == "x86_64" ]; then
-    LIBSPOTIFY="libspotify-0.0.8-linux6-x86_64"
+    LIBSPOTIFY="libspotify-10.1.16-Linux-x86_64-release"
 else
-    LIBSPOTIFY="libspotify-0.0.8-linux6-i686"
+    LIBSPOTIFY="libspotify-10.1.16-Linux-i686-release"
 fi
 
 # install libspotify into source tree per default
@@ -46,7 +46,7 @@ else
             ;;
     esac
     echo "Not found. Installing in $INSTDIR"
-    cd $LIBSPOTIFY && $SUDO make install prefix=$INSTDIR && cd ..
+    cd libspotify-Linux-$ARCH-* && $SUDO make install prefix=$INSTDIR && cd ..
 fi
 
 # we need to set PKG_CONFIG_PATH to find spotify unless it's
