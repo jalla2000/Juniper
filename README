@@ -19,7 +19,7 @@ libspotify (download from http://developer.spotify.com)
 TODO: libogg is also probably needed
 lame
 
-Juniper will compile without lame, but will carefully fail to
+Juniper will compile without lame, but will gracefully fail to
 create mp3-files at runtime.
 
 Running the configure.sh script will download and install
@@ -32,12 +32,6 @@ When the libraries and the application key are in place,
 simply run:
 ./configure.sh
 make
-
-How to run
-==============================================================
-
-Create a file with your username and password on two separate
-lines. Username first, then password. Save file as user.cfg
 
 Then simply run:
 ./juniper
