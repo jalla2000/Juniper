@@ -30,6 +30,7 @@
 #include <libspotify/api.h>
 #include <stdlib.h>
 #include <QDebug>
+#include <cassert>
 
 #define DEBUGLEVEL 0
 #define DEBUG if(DEBUGLEVEL)
@@ -125,13 +126,15 @@ int TrackListModel::rowCount(const QModelIndex &index) const
 {
     Q_UNUSED(index);
 
+    int rowCount = 0;
     if (searchList_ != NULL)
-        return sp_search_num_tracks(searchList_);
+        rowCount = sp_search_num_tracks(searchList_);
 
-    if (playList_ != NULL)
-        return sp_playlist_num_tracks(playList_);
+    if (playList_ != NULL) {
+        rowCount = sp_playlist_num_tracks(playList_);
+    }
 
-    return 0;
+    return rowCount;
 }
 
 int TrackListModel::columnCount(const QModelIndex &index) const
@@ -140,7 +143,7 @@ int TrackListModel::columnCount(const QModelIndex &index) const
     return columns_;
 }
 
-sp_track *TrackListModel::getTrack(const QModelIndex &index)
+sp_track * TrackListModel::getTrack(const QModelIndex &index)
 {
     int row = index.row();
 
@@ -161,27 +164,48 @@ QVariant TrackListModel::data(const QModelIndex &index, int role) const
 
         sp_track *track;
 
-        if (searchList_ != NULL)
+        if (searchList_ != NULL) {
             track = sp_search_track(searchList_, row);
-        else if (playList_ != NULL)
+        }
+        else if (playList_ != NULL) {
             track = sp_playlist_track(playList_, row);
-        else
+        }
+        else {
             return QVariant();
+        }
 
         switch(column){
             case 0: {
-                const char *trackName = sp_track_name(track);
-                return QString().fromUtf8(trackName);
+                const char * trackName = sp_track_name(track);
+                if (trackName[0] == '\0') {
+                    return QString().fromUtf8("Loading...");
+                }
+                else {
+                    return QString().fromUtf8(trackName);
+                }
             }
             case 1: {
-                sp_artist *tartist = sp_track_artist(track, 0);
-                const char *artistName = sp_artist_name(tartist);
-                return QString().fromUtf8(artistName);
+                int numArtists = sp_track_num_artists(track);
+                //If no metadata is available for the track yet, sp_track_num_artists returns 0
+                if (numArtists == 0) {
+                    return QString().fromUtf8("");
+                }
+                else {
+                    sp_artist * tartist = sp_track_artist(track, 0);
+                    const char *artistName = sp_artist_name(tartist);
+                    return QString().fromUtf8(artistName);
+                }
             }
             case 2: {
-                sp_album *talbum = sp_track_album(track);
-                const char *albumName = sp_album_name(talbum);
-                return QString().fromUtf8(albumName);
+                sp_album * talbum = sp_track_album(track);
+                //If no metadata is available for the track yet, sp_track_num_artists returns 0
+                if (talbum == 0) {
+                    return QString().fromUtf8("");
+                }
+                else {
+                    const char * albumName = sp_album_name(talbum);
+                    return QString().fromUtf8(albumName);
+                }
             }
             case 3: {
                 int duration = sp_track_duration(track);
