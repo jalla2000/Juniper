@@ -178,7 +178,8 @@ extern "C" void playlist_moved(sp_playlistcontainer * /*pc*/,
                  new_position);
 }
 
-extern "C" void container_loaded(sp_playlistcontainer *playlists, void * /*userdata*/)
+extern "C" void container_loaded(sp_playlistcontainer *playlists,
+                                 void * /*userdata*/)
 {
     DEBUG printf("SpotWorker: container_loaded (%d playlists)\n",
                  sp_playlistcontainer_num_playlists(playlists));
