@@ -21,6 +21,8 @@
  *
  */
 
+#include "qlistlistmodel.hpp"
+
 #include <QAbstractTableModel>
 #include <QModelIndex>
 #include <QVariant>
@@ -29,7 +31,6 @@
 #include <QPixmap>
 
 #include <libspotify/api.h>
-#include "qlistlistmodel.hpp"
 #include <stdlib.h>
 #include <stdio.h>
 
