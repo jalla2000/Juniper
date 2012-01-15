@@ -31,6 +31,7 @@
 #include <QPixmap>
 
 #include <libspotify/api.h>
+#include <cassert>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -39,15 +40,16 @@
 
 QListListModel::QListListModel(QObject *parent)
     : QAbstractItemModel(parent)
+    , selectedIndex_(0)
+    , playLists_(NULL)
 {
-    playLists = NULL;
-    searchLists = new QList<sp_search*>;
 }
 
 void QListListModel::setPlayLists(sp_playlistcontainer *plc)
 {
+    DEBUG printf("%s::%s\n", __FILE__, __func__);
     beginResetModel();
-    playLists = plc;
+    playLists_ = plc;
     endResetModel();
 }
 
@@ -91,8 +93,8 @@ int QListListModel::rowCount(const QModelIndex &index) const
     //printf("List: %p\n", this->list);
     int count = 0;
     //TODO: add searchLists and playLists
-    if(this->playLists)
-        count += sp_playlistcontainer_num_playlists(this->playLists);;
+    if(playLists_)
+        count += sp_playlistcontainer_num_playlists(playLists_);
     //printf("Count: %d\n", count);
     return count;
 }
@@ -103,24 +105,25 @@ int QListListModel::columnCount(const QModelIndex &index) const
     return 1;
 }
 
-sp_playlist *QListListModel::getPlayList(const QModelIndex &index)
+sp_playlist * QListListModel::getPlayList(const QModelIndex &index)
 {
     // TODO: DANGER! playList may be NULL, though this function
     // should in THEORY never be called if it is...
     int row = index.row();
-    selectedIndex = this->searchLists->size() + row;
-    return sp_playlistcontainer_playlist(this->playLists, row);
+    selectedIndex_ = searchLists_.size() + row;
+    assert(playLists_);
+    return sp_playlistcontainer_playlist(playLists_, row);
 }
 
 sp_search *QListListModel::getSearchList(const QModelIndex &index)
 {
     int row = index.row();
-    if(row>(searchLists->size()-1)){
+    if(row>(searchLists_.size()-1)){
         DEBUG printf("Serirorus error occured. Bounds check failed in listlistmodel.\n");
-        return this->searchLists->at(0);
+        return searchLists_.at(0);
     }
     else{
-        return this->searchLists->at(row);
+        return searchLists_.at(row);
     }
 }
 
@@ -128,24 +131,26 @@ sp_track *QListListModel::getTrack(const QModelIndex &index)
 {
     //TODO: add extra bounds checking on index.row()
     DEBUG printf("QListListModel: getTrack()\n");
-    if(selectedIndex < searchLists->size()){
-        return sp_search_track(searchLists->at(selectedIndex), index.row());
+    if(selectedIndex_ < searchLists_.size()){
+        return sp_search_track(searchLists_.at(selectedIndex_), index.row());
     }
-    else if ((selectedIndex - searchLists->size()) < playListCount()){
-        sp_playlist *pl = sp_playlistcontainer_playlist(playLists, selectedIndex - searchLists->size());
+    else if ((selectedIndex_ - searchLists_.size()) < playListCount()){
+        sp_playlist *pl = sp_playlistcontainer_playlist(playLists_,
+                                                        selectedIndex_ - searchLists_.size());
         return sp_playlist_track(pl, index.row());
     }
     else{
         DEBUG printf("FATAL ERROR: bounds check failed in QListListModel::getTrack\n");
-        DEBUG printf("index: %d, searchLists->size = %d, playListCount() = %d\n", selectedIndex, searchLists->size(), playListCount());
+        DEBUG printf("index: %d, searchLists->size = %d, playListCount() = %d\n",
+                     selectedIndex_, searchLists_.size(), playListCount());
     }
     return NULL;
 }
 
 int QListListModel::playListCount(void)
 {
-    if(playLists)
-        return sp_playlistcontainer_num_playlists(this->playLists);
+    if(playLists_)
+        return sp_playlistcontainer_num_playlists(playLists_);
     else
         return 0;
 }
@@ -153,7 +158,7 @@ int QListListModel::playListCount(void)
 QVariant QListListModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
-    sp_playlist *pl = sp_playlistcontainer_playlist(this->playLists, row);
+    sp_playlist *pl = sp_playlistcontainer_playlist(playLists_, row);
 
     if (role == Qt::DisplayRole){
         return QString(QString::fromUtf8(sp_playlist_name(pl)));
@@ -189,14 +194,14 @@ bool QListListModel::insertRows(int row, sp_track *track)
 void QListListModel::addSearch(sp_search *search)
 {
     DEBUG printf("QListListModel::addSearch: appending searchlist\n");
-    this->searchLists->append(search);
+    searchLists_.append(search);
     DEBUG printf("QListListModel::addSearch: setting selectedIndex\n");
-    this->selectedIndex = searchLists->size()-1;
+    selectedIndex_ = searchLists_.size()-1;
 }
 
 bool QListListModel::isSearchList(const QModelIndex &index)
 {
-    if(index.row() < searchLists->size())
+    if(index.row() < searchLists_.size())
         return true;
     else
         return false;

@@ -53,9 +53,9 @@ class QListListModel : public QAbstractItemModel
     void setPlayLists(sp_playlistcontainer *plc);
 
  private:
-    int selectedIndex;  //bad idea?
-    QList<sp_search*> *searchLists;
-    sp_playlistcontainer *playLists;
+    int selectedIndex_;  //bad idea?
+    QList<sp_search*> searchLists_;
+    sp_playlistcontainer * playLists_;
 };
 
 #endif
