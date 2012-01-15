@@ -76,7 +76,7 @@ class SpotWorker : public QObject {
     /* signal-emitting C++ functions for the 9 sp_session_callbacks */
     void emitLoggedInSignal(sp_session *session, sp_error error);
     void emitLoggedOutSignal(sp_session *session);
-    //TODO: metadata signal
+    void emitMetadataUpdated(sp_session * session);
     void emitConnectionErrorSignal(sp_session *session, sp_error error);
     //TODO: message to user signal
     //TODO: notify main thread? (probably no need)
@@ -153,7 +153,7 @@ class SpotWorker : public QObject {
  signals:
     void loggedIn(sp_session *session, sp_error error);
     void loggedOut(sp_session *session);
-    //TODO: metadata_updated signal
+    void metadataUpdated(sp_session *);
     void connectionError(sp_session *session, sp_error error);
     //TODO: message to user signal
     //TODO: notify main thread? (probably no need)

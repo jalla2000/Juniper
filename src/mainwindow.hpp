@@ -65,6 +65,7 @@ class MainWindow : public QMainWindow, private Ui::Juniper {
     void loginFailed(void);
     void loggedIn();
     void about();
+    void updateViews();
     void updateGui();
     void toggleAutoRip(bool);
     void playStop();

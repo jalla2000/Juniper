@@ -260,6 +260,11 @@ void SpotWorker::emitLoggedOutSignal(sp_session *session)
     emit loggedOut(session);
 }
 
+void SpotWorker::emitMetadataUpdated(sp_session * session)
+{
+    emit metadataUpdated(session);
+}
+
 int SpotWorker::emitMusicDeliverySignal(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames)
 {
     int framesEaten = alsaWorker_->musicDelivery(session, format, frames, num_frames);

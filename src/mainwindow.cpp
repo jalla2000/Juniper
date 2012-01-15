@@ -92,6 +92,14 @@ void MainWindow::connectSignals()
     connect(guiUpdater_, SIGNAL(timeout()),
             this, SLOT(updateGui()) );
 
+    connect(spotWorker, SIGNAL(loggedOut(sp_session*)),
+            this, SLOT(loginFailed()) );
+    connect(spotWorker, SIGNAL(loggedIn(sp_session*, sp_error*)),
+            this, SLOT(loggedIn()) );
+
+    connect(spotWorker, SIGNAL(metadataUpdated(sp_session*)),
+            this, SLOT(updateViews()) );
+
     connect(spotWorker, SIGNAL(playlistAdded(sp_playlistcontainer*)),
             listListModel_, SLOT(setPlayLists(sp_playlistcontainer*)) );
 
@@ -107,11 +115,6 @@ void MainWindow::connectSignals()
 
     connect(spotWorker, SIGNAL(searchComplete(sp_search*)),
             trackListModel_, SLOT(setSearch(sp_search*)));
-
-    connect(spotWorker, SIGNAL(loggedOut(sp_session*)),
-            this, SLOT(loginFailed()) );
-    connect(spotWorker, SIGNAL(loggedIn(sp_session*, sp_error*)),
-            this, SLOT(loggedIn()) );
 
     connect(trackList, SIGNAL(doubleClicked(const QModelIndex)),
             this, SLOT(songDoubleClicked(const QModelIndex)) );
@@ -211,6 +214,14 @@ void MainWindow::updateGui()
         playButton->setIcon(QPixmap(":gfx/stop.png"));
     else
         playButton->setIcon(QPixmap(":gfx/play.png"));
+}
+
+void MainWindow::updateViews()
+{
+    // FIXME: this is a bit overkill.
+    // it will make the view re-read everything from model
+    listListView->reset();
+    trackList->reset();
 }
 
 void MainWindow::toggleRipFormat()

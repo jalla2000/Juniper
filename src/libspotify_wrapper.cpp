@@ -110,8 +110,10 @@ extern "C" void sigIgn(int signo)
     DEBUG printf("sigIgn: %d\n", signo);
 }
 
-extern "C" void metadata_updated(sp_session * /*session*/)
+extern "C" void metadata_updated(sp_session * session)
 {
+    DEBUG printf("%s::metadata_updated\n", __FILE__);
+    SpotWorker::getInstance()->emitMetadataUpdated(session);
 }
 
 extern "C" void session_ready(sp_session * session)
