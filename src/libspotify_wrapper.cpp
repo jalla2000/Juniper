@@ -23,6 +23,9 @@
 
 #include "spotify.h"
 
+#define DEBUGLEVEL 0
+#define DEBUG if(DEBUGLEVEL)
+
 static sp_playlist_callbacks pl_callbacks = {
     &tracks_added,
     &tracks_removed,
@@ -88,7 +91,7 @@ extern "C" void play_token_lost(sp_session *session)
 
 extern "C" void log_message(sp_session * /*session*/, const char *data)
 {
-    fprintf(stderr, "log_message: %s\n", data);
+    DEBUG printf("log_message: %s\n", data);
 }
 
 extern "C" void end_of_track(sp_session * /*session*/)
@@ -181,7 +184,7 @@ extern "C" void playlist_moved(sp_playlistcontainer * /*pc*/,
 extern "C" void container_loaded(sp_playlistcontainer *playlists,
                                  void * /*userdata*/)
 {
-    DEBUG printf("SpotWorker: container_loaded (%d playlists)\n",
+    printf("SpotWorker: container_loaded (%d playlists)\n",
                  sp_playlistcontainer_num_playlists(playlists));
     SpotWorker *sw = SpotWorker::getInstance();
     sw->emitPlaylistAdded(playlists);

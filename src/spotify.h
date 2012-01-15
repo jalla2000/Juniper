@@ -27,9 +27,6 @@
 #include "spotworker.hpp"
 #include <libspotify/api.h>
 
-#define DEBUGLEVEL 1
-#define DEBUG if(DEBUGLEVEL)
-
 /// The application key is specific to each project, and allows Spotify
 /// to produce statistics on how our service is used.
 extern const uint8_t g_appkey[];

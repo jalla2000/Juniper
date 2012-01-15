@@ -73,7 +73,6 @@ MainWindow::MainWindow(QWidget *parent)
         printf("Failet to start SpotWorker!\n");
         assert(false);
     }
-    qDebug() << "SpotWorker started";
 
     connectSignals();
     qDebug() << "Signals connected";

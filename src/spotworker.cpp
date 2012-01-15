@@ -94,8 +94,6 @@ SpotWorker::SpotWorker(QObject *parent)
     totalFrames_ = 0;
     frameCounter_ = -1;
     //playing = false;
-
-    DEBUG printf("SpotWorker started\n");
 }
 
 bool SpotWorker::start(QString username, QString password)
